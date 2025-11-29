@@ -1,89 +1,21 @@
 import express from 'express';
-import userController from '../../controller/userController.js';
+import groupController from '../../controller/groupController.js';
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: Quản lý người dùng
+ *   name: Groups
+ *   description: Quản lý nhóm người dùng
  */
-
+// Tạo nhóm người dùng
 /**
  * @swagger
- * /users:
- *   get:
- *     summary: Lấy danh sách user
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - $ref: '#/components/parameters/PageParam'
- *       - $ref: '#/components/parameters/LimitParam'
- *     responses:
- *       200:
- *         description: Lấy danh sách user thành công
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
- *                   properties:
- *                     data:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/User'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
- */
-router.get('/', userController.getAllUsers);
-
-/**
- * @swagger
- * /users/{id}:
- *   get:
- *     summary: Lấy chi tiết user
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
- *     responses:
- *       200:
- *         description: Lấy chi tiết user thành công
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
- *                   properties:
- *                     data:
- *                       $ref: '#/components/schemas/User'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       404:
- *         $ref: '#/components/responses/NotFound'
- *       500:
- *         $ref: '#/components/responses/InternalServerError'
- */
-router.get('/:id', userController.getUserById);
-
-/**
- * @swagger
- * /users:
+ * /groups:
  *   post:
- *     summary: Tạo mới user
- *     tags: [Users]
+ *     summary: Tạo mới group
+ *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -91,10 +23,10 @@ router.get('/:id', userController.getUserById);
  *       content:
  *         multipart/form-data:
    *           schema:
-   *             $ref: '#/components/schemas/User'
+   *             $ref: '#/components/schemas/Group'
  *     responses:
  *       201:
- *         description: Tạo user thành công
+ *         description: Tạo group thành công
  *         content:
  *           application/json:
  *             schema:
@@ -113,32 +45,23 @@ router.get('/:id', userController.getUserById);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', userController.createUser);
+router.post('/', groupController.createGroup);
 
+// Lấy tất cả nhóm người dùng với phân trang
 /**
  * @swagger
- * /users/{id}:
- *   put:
- *     summary: Cập nhật user
- *     tags: [Users]
+ * /groups:
+ *   get:
+ *     summary: Lấy danh sách groups
+ *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
-   *           schema:
-   *             $ref: '#/components/schemas/User'
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
  *     responses:
  *       200:
- *         description: Cập nhật user thành công
+ *         description: Lấy danh sách group thành công
  *         content:
  *           application/json:
  *             schema:
@@ -147,7 +70,87 @@ router.post('/', userController.createUser);
  *                 - type: object
  *                   properties:
  *                     data:
- *                       $ref: '#/components/schemas/User'
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Group'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get('/', groupController.getAllGroups);
+
+// Lấy nhóm người dùng theo ID
+/**
+ * @swagger
+ * /groups/{id}:
+ *   get:
+ *     summary: Lấy chi tiết user
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID group
+ *     responses:
+ *       200:
+ *         description: Lấy chi tiết group thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Group'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get('/:id', groupController.getGroupById);
+
+// Cập nhật nhóm người dùng theo ID
+/**
+ * @swagger
+ * /groups/{id}:
+ *   put:
+ *     summary: Cập nhật group
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID group
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+   *           schema:
+   *             $ref: '#/components/schemas/Group'
+ *     responses:
+ *       200:
+ *         description: Cập nhật Group thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Group'
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       401:
@@ -157,14 +160,15 @@ router.post('/', userController.createUser);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', groupController.updateGroup);
 
+// Xóa nhóm người dùng theo ID
 /**
  * @swagger
- * /users/{id}:
+ * /groups/{id}:
  *   delete:
- *     summary: Xóa user
- *     tags: [Users]
+ *     summary: Xóa group
+ *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -173,10 +177,10 @@ router.put('/:id', userController.updateUser);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID user
+ *         description: ID group
  *     responses:
  *       200:
- *         description: Xóa user thành công
+ *         description: Xóa group thành công
  *         content:
  *           application/json:
  *             schema:
@@ -188,26 +192,26 @@ router.put('/:id', userController.updateUser);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', groupController.deleteGroup);
 
+// Xóa tất cả nhóm người dùng
 /** 
  * @swagger
- * /users:
+ * /groups:
  *   delete:
  *     summary: Xóa tất cả user
- *     tags: [Users]
+ *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *   responses:
- *    200:
- *     description: Xóa tất cả user thành công
- *     content:
- *       application/json:
- *         schema:
- *           $ref: '#/components/schemas/ApiResponse'
+ *    204:
+ *     description: Xóa thành công
  *    500:
- *     $ref: '#/components/responses/InternalServerError'
+ *     description: Lỗi máy chủ nội bộ
  */
-router.delete('/', userController.deleteAllUsers);
+router.delete('/', groupController.deleteAllGroup);
+
+// Gán vai trò cho nhóm người dùng
+// router.post('/:groupId/roles/:roleId', groupController.assignRoleToGroup);
 
 export default router;
