@@ -85,7 +85,7 @@ router.get('/', groupController.getAllGroups);
  * @swagger
  * /groups/{id}:
  *   get:
- *     summary: Lấy chi tiết user
+ *     summary: Lấy chi tiết group
  *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
@@ -199,7 +199,7 @@ router.delete('/:id', groupController.deleteGroup);
  * @swagger
  * /groups:
  *   delete:
- *     summary: Xóa tất cả user
+ *     summary: Xóa tất cả group
  *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
