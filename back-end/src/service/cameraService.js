@@ -35,7 +35,7 @@ const getAllCameras = async ({ page, limit }) => {
 }
 
 const getCameraById = async (id) => {
-    return await Camera.findByPk(id);
+    return await db.Camera.findByPk(id);
 };
 
 const updateCamera = async (id, payload) => {

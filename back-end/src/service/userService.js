@@ -26,8 +26,13 @@ const hashUserPassword = (password) => {
 // }
 
 const createUser = async (payload) => {
+    if (!payload.password) {
+        throw new Error('Password is required');
+    }
+
     let hashPass = hashUserPassword(payload.password);
     payload.password = hashPass;
+
     const user = await db.User.create(payload);
     return user;
 };
