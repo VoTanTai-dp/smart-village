@@ -18,17 +18,29 @@ const router = express.Router();
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
  *     responses:
  *       200:
- *         description: Danh sách user
+ *         description: Lấy danh sách user thành công
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/', userController.getUsers);
+router.get('/', userController.getAllUsers);
 
 /**
  * @swagger
@@ -47,15 +59,24 @@ router.get('/', userController.getUsers);
  *         description: ID user
  *     responses:
  *       200:
- *         description: Thông tin user
+ *         description: Lấy chi tiết user thành công
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Không tìm thấy user
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/:id', userController.getUser);
+router.get('/:id', userController.getUserById);
 
 /**
  * @swagger
@@ -76,27 +97,32 @@ router.get('/:id', userController.getUser);
  *               - username
  *               - password
  *             properties:
- *               groupId:
- *                 type: integer
- *               email:
- *                 type: string
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *               phone:
- *                 type: string
- *               sex:
- *                 type: string
+ *               groupId: { type: integer }
+ *               email: { type: string }
+ *               username: { type: string }
+ *               password: { type: string }
+ *               phone: { type: string }
+ *               sex: { type: string }
  *     responses:
  *       201:
- *         description: Tạo thành công
+ *         description: Tạo user thành công
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
  *       400:
- *         description: Dữ liệu không hợp lệ
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', userController.createUser);
 
@@ -122,23 +148,32 @@ router.post('/', userController.createUser);
  *           schema:
  *             type: object
  *             properties:
- *               groupId:
- *                 type: integer
- *               email:
- *                 type: string
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *               phone:
- *                 type: string
- *               sex:
- *                 type: string
+ *               groupId: { type: integer }
+ *               email: { type: string }
+ *               username: { type: string }
+ *               password: { type: string }
+ *               phone: { type: string }
+ *               sex: { type: string }
  *     responses:
  *       200:
- *         description: Cập nhật thành công
+ *         description: Cập nhật user thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Không tìm thấy user
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.put('/:id', userController.updateUser);
 
@@ -158,40 +193,26 @@ router.put('/:id', userController.updateUser);
  *           type: integer
  *         description: ID user
  *     responses:
- *       204:
- *         description: Xóa thành công
+ *       200:
+ *         description: Xóa user thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  *       404:
- *         description: Không tìm thấy user
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.delete('/:id', userController.deleteUser);
-
-/**
- * @swagger
- * /users/{id}:
- *   delete:
- *     summary: Xóa user
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
- *     responses:
- *       204:
- *         description: Xóa thành công
- *       404:
- *         description: Không tìm thấy user
- */
 
 /** 
  * @swagger
  * /users:
  *   delete:
- *     summary: Xóa user
+ *     summary: Xóa tất cả user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []

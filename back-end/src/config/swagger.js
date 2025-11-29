@@ -374,6 +374,171 @@ const swaggerDefinition = {
                     },
                 },
             },
+            ApiResponse: {
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'OK' },
+                    // data có thể là object, array, null tùy endpoint
+                    data: {},
+                },
+            },
+            ErrorResponse: {
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean', example: false },
+                    message: { type: 'string', example: 'Error message' },
+                    // optional: mã lỗi nội bộ nếu cần
+                    errorCode: { type: 'string', example: 'USER_NOT_FOUND' },
+                    // optional: chi tiết thêm
+                    details: {
+                        type: 'object',
+                        additionalProperties: true,
+                    },
+                },
+            },
+        },
+
+        responses: {
+            BadRequest: {
+                description: 'Yêu cầu không hợp lệ (validation error, dữ liệu sai định dạng, thiếu field...)',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Bad request',
+                                    errorCode: 'BAD_REQUEST',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            Unauthorized: {
+                description: 'Không có token hoặc token không hợp lệ',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Unauthorized',
+                                    errorCode: 'UNAUTHORIZED',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            Forbidden: {
+                description: 'Đã đăng nhập nhưng không đủ quyền truy cập',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Forbidden',
+                                    errorCode: 'FORBIDDEN',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            NotFound: {
+                description: 'Không tìm thấy resource',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Resource not found',
+                                    errorCode: 'NOT_FOUND',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            Conflict: {
+                description: 'Trạng thái xung đột (ví dụ: email đã tồn tại)',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Conflict',
+                                    errorCode: 'CONFLICT',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            InternalServerError: {
+                description: 'Lỗi phía server',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/ErrorResponse',
+                        },
+                        examples: {
+                            default: {
+                                value: {
+                                    success: false,
+                                    message: 'Internal server error',
+                                    errorCode: 'INTERNAL_SERVER_ERROR',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        parameters: {
+            PageParam: {
+                name: 'page',
+                in: 'query',
+                description: 'Trang hiện tại (bắt đầu từ 1)',
+                required: false,
+                schema: {
+                    type: 'integer',
+                    minimum: 1,
+                    default: 1,
+                },
+            },
+            LimitParam: {
+                name: 'limit',
+                in: 'query',
+                description: 'Số phần tử trên mỗi trang',
+                required: false,
+                schema: {
+                    type: 'integer',
+                    minimum: 1,
+                    default: 10,
+                },
+            },
         },
     },
     security: [

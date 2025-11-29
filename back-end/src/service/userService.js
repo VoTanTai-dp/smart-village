@@ -32,9 +32,24 @@ const createUser = async (payload) => {
     return user;
 };
 
-const getAllUsers = async () => {
-    const users = await db.User.findAll();
-    return users;
+const getAllUsers = async ({ page, limit }) => {
+    const offset = (page - 1) * limit;
+
+    const { rows, count } = await db.User.findAndCountAll({
+        offset,
+        limit,
+        order: [['id', 'ASC']],
+    });
+
+    return {
+        data: rows,
+        meta: {
+            page,
+            limit,
+            total: count,
+            totalPages: Math.ceil(count / limit),
+        },
+    };
 };
 
 const getUserById = async (id) => {
@@ -44,6 +59,10 @@ const getUserById = async (id) => {
 const updateUser = async (id, payload) => {
     const user = await db.User.findByPk(id);
     if (!user) return null;
+    if (payload.password) {
+        let hashPass = hashUserPassword(payload.password);
+        payload.password = hashPass;
+    }
     await user.update(payload);
     return user;
 };
