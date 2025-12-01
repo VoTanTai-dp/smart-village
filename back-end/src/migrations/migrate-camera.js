@@ -11,9 +11,6 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER
       },
-      sessionId: {
-        type: Sequelize.INTEGER
-      },
       ip: {
         type: Sequelize.STRING
       },

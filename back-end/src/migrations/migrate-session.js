@@ -8,6 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      cameraId: {
+        type: Sequelize.INTEGER
+      },
       startDate: {
         type: Sequelize.STRING
       },
