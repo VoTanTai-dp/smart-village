@@ -1,5 +1,6 @@
 import express from 'express';
 import userController from '../../controller/userController.js';
+import upload from '../../middleware/upload.js';
 
 const router = express.Router();
 
@@ -113,7 +114,7 @@ router.get('/:id', userController.getUserById);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', userController.createUser);
+router.post('/', upload.none(), userController.createUser);
 
 /**
  * @swagger

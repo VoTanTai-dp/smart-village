@@ -2,6 +2,17 @@ import userService from '../service/userService.js';
 
 const createUser = async (req, res) => {
     try {
+        // console.log("Body data:", req.body); // Log để debug xem đã nhận được text chưa
+        // console.log("File data:", req.file); // Log để xem file ảnh (nếu có)
+
+        if (!req.body.password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password is required',
+                errorCode: 'PASSWORD_REQUIRED'
+            });
+        }
+
         const newUser = await userService.createUser(req.body);
         return res.status(201).json({
             success: true,
