@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Group_Role',
+    tableName: 'Group_Role', // Chỉ định chính xác tên bảng trong DB (giống migration)
+    freezeTableName: true
   });
   return Group_Role;
 };

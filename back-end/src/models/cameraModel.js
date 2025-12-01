@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Camera_Model',
+    tableName: 'Camera_Model', // Chỉ định chính xác tên bảng trong DB (giống migration)
+    freezeTableName: true,
   });
   return Camera_Model;
 };
