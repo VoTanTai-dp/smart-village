@@ -1,7 +1,7 @@
 import express from 'express';
 import userRouter from './api/user.js';
 import groupRouter from './api/group.js';
-// import roleRouter from './api/role.js';
+import roleRouter from './api/role.js';
 // import groupRoleRouter from './api/groupRole.js';
 import cameraRouter from './api/camera.js';
 import sessionRouter from './api/session.js';
@@ -15,7 +15,7 @@ const router = express.Router();
 const initApiRoutes = (app) => {
     router.use('/users', userRouter);
     router.use('/groups', groupRouter);
-    // router.use('/roles', roleRouter);
+    router.use('/roles', roleRouter);
     // router.use('/group-roles', groupRoleRouter);
     router.use('/cameras', cameraRouter);
     router.use('/sessions', sessionRouter);
