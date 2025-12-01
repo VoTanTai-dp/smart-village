@@ -36,7 +36,7 @@ const router = express.Router();
  *                 - type: object
  *                   properties:
  *                     data:
- *                       $ref: '#/components/schemas/User'
+ *                       $ref: '#/components/schemas/Group'
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       401:
