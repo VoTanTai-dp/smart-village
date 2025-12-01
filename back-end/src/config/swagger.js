@@ -34,7 +34,6 @@ const swaggerDefinition = {
                     },
                     groupId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của nhóm user'
                     },
                     email: {
@@ -144,12 +143,10 @@ const swaggerDefinition = {
                     },
                     groupId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của nhóm người dùng'
                     },
                     roleID: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của quyền'
                     },
                     createdAt: {
@@ -174,7 +171,6 @@ const swaggerDefinition = {
                     },
                     userId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của user sở hữu camera'
                     },
                     ip: {
@@ -217,7 +213,6 @@ const swaggerDefinition = {
                     },
                     cameraId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của camera'
                     },
                     startDate: {
@@ -252,7 +247,6 @@ const swaggerDefinition = {
                     },
                     sessionId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của session'
                     },
                     temperature: {
@@ -292,7 +286,6 @@ const swaggerDefinition = {
                     },
                     sessionId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của session'
                     },
                     countPeople: {
@@ -355,12 +348,10 @@ const swaggerDefinition = {
                     },
                     cameraId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của camera'
                     },
                     modelAIId: {
                         type: 'integer',
-                        readOnly: true,
                         description: 'Mã định danh của mô hình AI'
                     },
                     createdAt: {
