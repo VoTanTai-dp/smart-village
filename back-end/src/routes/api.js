@@ -6,7 +6,7 @@ import roleRouter from './api/role.js';
 import cameraRouter from './api/camera.js';
 import sessionRouter from './api/session.js';
 import dataRouter from './api/data.js';
-// import countRouter from './api/count.js';
+import countRouter from './api/count.js';
 // import modelAIRouter from './api/modelAI.js';
 // import cameraModelRouter from './api/cameraModel.js';
 
@@ -20,7 +20,7 @@ const initApiRoutes = (app) => {
     router.use('/cameras', cameraRouter);
     router.use('/sessions', sessionRouter);
     router.use('/data', dataRouter);
-    // router.use('/counts', countRouter);
+    router.use('/counts', countRouter);
     // router.use('/models-ai', modelAIRouter);
     // router.use('/camera-models', cameraModelRouter);
 
