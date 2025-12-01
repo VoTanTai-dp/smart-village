@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'ModelAI',
+    tableName: 'ModelAI', // Chỉ định chính xác tên bảng trong DB (giống migration)
+    freezeTableName: true,
   });
   return ModelAI;
 };
