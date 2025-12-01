@@ -158,7 +158,7 @@ router.post('/', upload.none(), userController.createUser);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', upload.none(), userController.updateUser);
 
 /**
  * @swagger
