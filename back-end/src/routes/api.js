@@ -8,7 +8,7 @@ import sessionRouter from './api/session.js';
 import dataRouter from './api/data.js';
 import countRouter from './api/count.js';
 import modelAIRouter from './api/modelAI.js';
-// import cameraModelRouter from './api/cameraModel.js';
+import cameraModelRouter from './api/cameraModel.js';
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ const initApiRoutes = (app) => {
     router.use('/data', dataRouter);
     router.use('/counts', countRouter);
     router.use('/modelAI', modelAIRouter);
-    // router.use('/camera-models', cameraModelRouter);
+    router.use('/camera_model', cameraModelRouter);
 
     app.use('/api', router);
     return app;
