@@ -1,4 +1,4 @@
-import cameraService from '../services/cameraService.js';
+import cameraService from '../service/cameraService.js';
 
 const createCamera = async (req, res) => {
     try {
@@ -130,7 +130,7 @@ const deleteAllCameras = async (req, res) => {
     }
 };
 
-export {
+module.exports = {
     createCamera,
     getAllCameras,
     getCameraById,

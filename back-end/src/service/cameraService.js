@@ -12,7 +12,7 @@ const createCamera = async (payload) => {
     let hassPass = hashUserPassword(payload.password);
     payload.password = hassPass;
 
-    const camera = await db.Camera.create({ payload });
+    const camera = await db.Camera.create(payload);
     return camera;
 };
 

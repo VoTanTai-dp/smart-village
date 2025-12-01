@@ -3,7 +3,7 @@ import userRouter from './api/user.js';
 import groupRouter from './api/group.js';
 // import roleRouter from './api/role.js';
 // import groupRoleRouter from './api/groupRole.js';
-// import cameraRouter from './api/camera.js';
+import cameraRouter from './api/camera.js';
 // import sessionRouter from './api/session.js';
 // import dataRouter from './api/data.js';
 // import countRouter from './api/count.js';
@@ -17,7 +17,7 @@ const initApiRoutes = (app) => {
     router.use('/groups', groupRouter);
     // router.use('/roles', roleRouter);
     // router.use('/group-roles', groupRoleRouter);
-    // router.use('/cameras', cameraRouter);
+    router.use('/cameras', cameraRouter);
     // router.use('/sessions', sessionRouter);
     // router.use('/data', dataRouter);
     // router.use('/counts', countRouter);

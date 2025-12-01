@@ -1,5 +1,6 @@
 import exxpress from 'express';
 import cameraController from '../../controller/cameraController.js';
+import upload from '../../middleware/upload.js';
 
 const router = exxpress.Router();
 
@@ -46,7 +47,7 @@ const router = exxpress.Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', cameraController.createCamera);
+router.post('/', upload.none(), cameraController.createCamera);
 
 // Lấy tất cả camera với phân trang
 /**
@@ -161,7 +162,7 @@ router.get('/:id', cameraController.getCameraById);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.put('/:id', cameraController.updateCamera);
+router.put('/:id', upload.none(), cameraController.updateCamera);
 
 // Xóa camera theo ID
 /**
