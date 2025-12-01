@@ -84,11 +84,12 @@ const swaggerDefinition = {
                     },
                     groupname: {
                         type: 'string',
+                        example: 'dev',
                         description: 'Tên nhóm người dùng'
                     },
                     description: {
                         type: 'string',
-                        example: 'Nhóm quản trị hệ thống',
+                        example: 'Nhóm lập trình viên',
                         description: 'Mô tả về nhóm người dùng'
                     },
                     createdAt: {

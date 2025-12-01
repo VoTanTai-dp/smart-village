@@ -1,7 +1,7 @@
 import db from '../models';
 
 const createGroup = async (payload) => {
-    const group = await db.Group.create({ payload });
+    const group = await db.Group.create(payload);
     return group;
 };
 

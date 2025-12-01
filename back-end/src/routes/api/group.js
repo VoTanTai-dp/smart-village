@@ -1,5 +1,6 @@
 import express from 'express';
 import groupController from '../../controller/groupController.js';
+import upload from '../../middleware/upload.js';
 
 const router = express.Router();
 
@@ -45,7 +46,7 @@ const router = express.Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', groupController.createGroup);
+router.post('/', upload.none(), groupController.createGroup);
 
 // Lấy tất cả nhóm người dùng với phân trang
 /**
@@ -160,7 +161,7 @@ router.get('/:id', groupController.getGroupById);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.put('/:id', groupController.updateGroup);
+router.put('/:id', upload.none(), groupController.updateGroup);
 
 // Xóa nhóm người dùng theo ID
 /**
