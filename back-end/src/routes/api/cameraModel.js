@@ -15,6 +15,7 @@ const router = express.Router();
  * @swagger
  * /camera_model:
  *   post:
+ *     operationId: createCamera_Model
  *     summary: Tạo mới camera_model
  *     tags: [Camera_Model]
  *     security:
@@ -53,6 +54,7 @@ router.post('/', upload.none(), cameraModelController.createCamera_Model);
  * @swagger
  * /camera_model:
  *   get:
+ *     operationId: getAllCamera_Models
  *     summary: Lấy danh sách camera_model
  *     tags: [Camera_Model]
  *     security:
@@ -86,17 +88,13 @@ router.get('/', cameraModelController.getAllCamera_Models);
  * @swagger
  * /camera_model/{id}:
  *   get:
+ *     operationId: getCamera_ModelById
  *     summary: Lấy chi tiết camera_model
  *     tags: [Camera_Model]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera_model
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết camera_model thành công
@@ -123,17 +121,13 @@ router.get('/:id', cameraModelController.getCamera_ModelById);
  * @swagger
  * /camera_model/{id}:
  *   put:
+ *     operationId: updateCamera_Model
  *     summary: Cập nhật camera_model
  *     tags: [Camera_Model]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera_model
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +162,13 @@ router.put('/:id', upload.none(), cameraModelController.updateCamera_Model);
  * @swagger
  * /camera_model/{id}:
  *   delete:
+ *     operationId: deleteCamera_Model
  *     summary: Xóa camera_model
  *     tags: [Camera_Model]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera_model
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa camera_model thành công
@@ -200,6 +190,7 @@ router.delete('/:id', cameraModelController.deleteCamera_Model);
  * @swagger
  * /camera_model:
  *   delete:
+ *     operationId: deleteAllCamera_Model
  *     summary: Xóa tất cả camera_model
  *     tags: [Camera_Model]
  *     security:
