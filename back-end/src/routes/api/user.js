@@ -14,7 +14,8 @@ const router = express.Router();
 /**
  * @swagger
  * /users:
- *   get:
+ *   get: 
+ *     operationId: getAllUsers
  *     summary: Lấy danh sách user
  *     tags: [Users]
  *     security:
@@ -47,17 +48,13 @@ router.get('/', userController.getAllUsers);
  * @swagger
  * /users/{id}:
  *   get:
+ *     operationId: getUserById
  *     summary: Lấy chi tiết user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết user thành công
@@ -83,6 +80,7 @@ router.get('/:id', userController.getUserById);
  * @swagger
  * /users:
  *   post:
+ *     operationId: createUser
  *     summary: Tạo mới user
  *     tags: [Users]
  *     security:
@@ -120,17 +118,13 @@ router.post('/', upload.none(), userController.createUser);
  * @swagger
  * /users/{id}:
  *   put:
+ *     operationId: updateUser
  *     summary: Cập nhật user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -164,17 +158,13 @@ router.put('/:id', upload.none(), userController.updateUser);
  * @swagger
  * /users/{id}:
  *   delete:
+ *     operationId: deleteUser
  *     summary: Xóa user
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID user
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa user thành công
@@ -195,6 +185,7 @@ router.delete('/:id', userController.deleteUser);
  * @swagger
  * /users:
  *   delete:
+ *     operationId: deleteAllUsers
  *     summary: Xóa tất cả user
  *     tags: [Users]
  *     security:

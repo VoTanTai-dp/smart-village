@@ -509,6 +509,16 @@ const swaggerDefinition = {
         },
 
         parameters: {
+            IdParam: {
+                name: 'id',
+                in: 'path',
+                description: 'Mã định danh',
+                required: true,
+                schema: {
+                    type: 'integer',
+                    minimum: 1,
+                },
+            },
             PageParam: {
                 name: 'page',
                 in: 'query',
