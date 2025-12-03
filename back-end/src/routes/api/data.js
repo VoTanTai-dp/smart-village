@@ -15,6 +15,7 @@ const router = express.Router();
  * @swagger
  * /data:
  *   post:
+ *     operationId: createData
  *     summary: Tạo mới data
  *     tags: [Data]
  *     security:
@@ -53,6 +54,7 @@ router.post('/', upload.none(), dataController.createData);
  * @swagger
  * /data:
  *   get:
+ *     operationId: getAllData
  *     summary: Lấy danh sách data
  *     tags: [Data]
  *     security:
@@ -86,17 +88,13 @@ router.get('/', dataController.getAllData);
  * @swagger
  * /data/{id}:
  *   get:
+ *     operationId: getDataById
  *     summary: Lấy chi tiết data
  *     tags: [Data]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID data
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết data thành công
@@ -123,17 +121,13 @@ router.get('/:id', dataController.getDataById);
  * @swagger
  * /data/{id}:
  *   put:
+ *     operationId: updateData
  *     summary: Cập nhật data
  *     tags: [Data]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID data
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +162,13 @@ router.put('/:id', upload.none(), dataController.updateData);
  * @swagger
  * /data/{id}:
  *   delete:
+ *     operationId: deleteDataById
  *     summary: Xóa data
  *     tags: [Data]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID data
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa data thành công
@@ -200,6 +190,7 @@ router.delete('/:id', dataController.deleteData);
  * @swagger
  * /data:
  *   delete:
+ *     operationId: deleteAllData
  *     summary: Xóa tất cả data
  *     tags: [Data]
  *     security:

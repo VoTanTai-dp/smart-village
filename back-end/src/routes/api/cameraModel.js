@@ -162,7 +162,7 @@ router.put('/:id', upload.none(), cameraModelController.updateCamera_Model);
  * @swagger
  * /camera_model/{id}:
  *   delete:
- *     operationId: deleteCamera_Model
+ *     operationId: deleteCamera_ModelById
  *     summary: Xóa camera_model
  *     tags: [Camera_Model]
  *     security:

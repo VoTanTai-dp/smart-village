@@ -10,11 +10,14 @@ const router = express.Router();
  *   name: Roles
  *   description: Quản lý quyền người dùng
  */
+
 // Tạo quyền người dùng
+
 /**
  * @swagger
  * /roles:
  *   post:
+ *     operationId: createRole
  *     summary: Tạo mới role
  *     tags: [Roles]
  *     security:
@@ -53,6 +56,7 @@ router.post('/', upload.none(), roleController.createRole);
  * @swagger
  * /roles:
  *   get:
+ *     operationId: getAllRoles
  *     summary: Lấy danh sách roles
  *     tags: [Roles]
  *     security:
@@ -86,17 +90,13 @@ router.get('/', roleController.getAllRoles);
  * @swagger
  * /roles/{id}:
  *   get:
+ *     operationId: getRoleById
  *     summary: Lấy chi tiết role
  *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID role
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết role thành công
@@ -123,17 +123,13 @@ router.get('/:id', roleController.getRoleById);
  * @swagger
  * /roles/{id}:
  *   put:
+ *     operationId: updateRole
  *     summary: Cập nhật role
  *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID role
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +164,13 @@ router.put('/:id', upload.none(), roleController.updateRole);
  * @swagger
  * /roles/{id}:
  *   delete:
+ *     operationId: deleteRolebyId
  *     summary: Xóa role
  *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID role
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa role thành công
@@ -200,6 +192,7 @@ router.delete('/:id', roleController.deleteRole);
  * @swagger
  * /roles:
  *   delete:
+ *     operationId: deleteAllRole
  *     summary: Xóa tất cả role
  *     tags: [Roles]
  *     security:

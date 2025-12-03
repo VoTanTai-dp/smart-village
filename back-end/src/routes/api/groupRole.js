@@ -10,11 +10,14 @@ const router = express.Router();
  *   name: Group_Role
  *   description: Quản lý phân quyền theo nhóm người dùng
  */
+
 // Tạo phân quyền theo nhóm người dùng
+
 /**
  * @swagger
  * /group_role:
  *   post:
+ *     operationId: createGroup_Role
  *     summary: Tạo mới group_role
  *     tags: [Group_Role]
  *     security:
@@ -53,6 +56,7 @@ router.post('/', upload.none(), groupRoleController.createGroup_Role);
  * @swagger
  * /group_role:
  *   get:
+ *     operationId: getAllGroup_Roles
  *     summary: Lấy danh sách group_role
  *     tags: [Group_Role]
  *     security:
@@ -86,17 +90,13 @@ router.get('/', groupRoleController.getAllGroup_Roles);
  * @swagger
  * /group_role/{id}:
  *   get:
+ *     operationId: getGroup_RoleById
  *     summary: Lấy chi tiết group_role
  *     tags: [Group_Role]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group_role
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết group_role thành công
@@ -123,17 +123,13 @@ router.get('/:id', groupRoleController.getGroup_RoleById);
  * @swagger
  * /group_role/{id}:
  *   put:
+ *     operationId: updateGroup_Role
  *     summary: Cập nhật group_role
  *     tags: [Group_Role]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group_role
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +164,13 @@ router.put('/:id', upload.none(), groupRoleController.updateGroup_Role);
  * @swagger
  * /group_role/{id}:
  *   delete:
+ *     operationId: deleteGroup_RoleById
  *     summary: Xóa group_role
  *     tags: [Group_Role]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group_role
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa group_role thành công
@@ -200,6 +192,7 @@ router.delete('/:id', groupRoleController.deleteGroup_Role);
  * @swagger
  * /group_role:
  *   delete:
+ *     operationId: deleteAllGroup_Role
  *     summary: Xóa tất cả group_role
  *     tags: [Group_Role]
  *     security:

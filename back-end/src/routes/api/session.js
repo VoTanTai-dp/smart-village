@@ -10,11 +10,14 @@ const router = express.Router();
  *   name: Sessions
  *   description: Quản lý phiên kết nối
  */
+
 // Tạo phiên kết nối
+
 /**
  * @swagger
  * /sessions:
  *   post:
+ *     operationId: createSession
  *     summary: Tạo mới session
  *     tags: [Sessions]
  *     security:
@@ -53,6 +56,7 @@ router.post('/', upload.none(), sessionController.createSession);
  * @swagger
  * /sessions:
  *   get:
+ *     operationId: getAllSessions
  *     summary: Lấy danh sách sessions
  *     tags: [Sessions]
  *     security:
@@ -86,17 +90,13 @@ router.get('/', sessionController.getAllSessions);
  * @swagger
  * /sessions/{id}:
  *   get:
+ *     operationId: getSessionById
  *     summary: Lấy chi tiết session
  *     tags: [Sessions]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID session
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết session thành công
@@ -123,17 +123,13 @@ router.get('/:id', sessionController.getSessionById);
  * @swagger
  * /sessions/{id}:
  *   put:
+ *     operationId: updateSession
  *     summary: Cập nhật session
  *     tags: [Sessions]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID session
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +164,13 @@ router.put('/:id', upload.none(), sessionController.updateSession);
  * @swagger
  * /sessions/{id}:
  *   delete:
+ *     operationId: deleteSessionById
  *     summary: Xóa session
  *     tags: [Sessions]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID session
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa session thành công
@@ -200,6 +192,7 @@ router.delete('/:id', sessionController.deleteSessionById);
  * @swagger
  * /sessions:
  *   delete:
+ *     operationId: deleteAllSessions
  *     summary: Xóa tất cả session
  *     tags: [Sessions]
  *     security:
@@ -211,8 +204,5 @@ router.delete('/:id', sessionController.deleteSessionById);
  *     description: Lỗi máy chủ nội bộ
  */
 router.delete('/', sessionController.deleteAllSessions);
-
-// Gán vai trò cho phiên kết nối
-// router.post('/:groupId/roles/:roleId', sessionController.assignRoleToGroup);
 
 export default router;

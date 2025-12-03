@@ -16,6 +16,7 @@ const router = exxpress.Router();
  * @swagger
  * /cameras:
  *   post:
+ *     operationId: createCamera
  *     summary: Tạo mới camera
  *     tags: [Cameras]
  *     security:
@@ -54,6 +55,7 @@ router.post('/', upload.none(), cameraController.createCamera);
  * @swagger
  * /cameras:
  *   get:
+ *     operationId: getAllCameras
  *     summary: Lấy danh sách cameras
  *     tags: [Cameras]
  *     security:
@@ -87,17 +89,13 @@ router.get('/', cameraController.getAllCameras);
  * @swagger
  * /cameras/{id}:
  *   get:
+ *     operationId: getCameraById
  *     summary: Lấy chi tiết camera
  *     tags: [Cameras]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết camera thành công
@@ -124,17 +122,13 @@ router.get('/:id', cameraController.getCameraById);
  * @swagger
  * /cameras/{id}:
  *   put:
+ *     operationId: updateCamera
  *     summary: Cập nhật camera
  *     tags: [Cameras]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -169,17 +163,13 @@ router.put('/:id', upload.none(), cameraController.updateCamera);
  * @swagger
  * /cameras/{id}:
  *   delete:
+ *     operationId: deleteCameraById
  *     summary: Xóa camera
  *     tags: [Cameras]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID camera
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa camera thành công
@@ -201,6 +191,7 @@ router.delete('/:id', cameraController.deleteCamera);
  * @swagger
  * /cameras:
  *   delete:
+ *     operationId: deleteAllCameras
  *     summary: Xóa tất cả camera
  *     tags: [Cameras]
  *     security:

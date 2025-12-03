@@ -15,6 +15,7 @@ const router = express.Router();
  * @swagger
  * /counts:
  *   post:
+ *     operationId: createCount
  *     summary: Tạo mới count
  *     tags: [Counts]
  *     security:
@@ -53,6 +54,7 @@ router.post('/', upload.none(), countController.createCount);
  * @swagger
  * /counts:
  *   get:
+ *     operationId: getAllCounts
  *     summary: Lấy danh sách counts
  *     tags: [Counts]
  *     security:
@@ -86,17 +88,13 @@ router.get('/', countController.getAllCounts);
  * @swagger
  * /counts/{id}:
  *   get:
+ *     operationId: getCountById
  *     summary: Lấy chi tiết count
  *     tags: [Counts]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID count
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết count thành công
@@ -123,17 +121,13 @@ router.get('/:id', countController.getCountById);
  * @swagger
  * /counts/{id}:
  *   put:
+ *     operationId: updateCount
  *     summary: Cập nhật count
  *     tags: [Counts]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID count
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +162,13 @@ router.put('/:id', upload.none(), countController.updateCount);
  * @swagger
  * /counts/{id}:
  *   delete:
+ *     operationId: deleteCountById
  *     summary: Xóa count
  *     tags: [Counts]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID count
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa count thành công
@@ -200,6 +190,7 @@ router.delete('/:id', countController.deleteCount);
  * @swagger
  * /counts:
  *   delete:
+ *     operationId: deleteAllCount
  *     summary: Xóa tất cả count
  *     tags: [Counts]
  *     security:

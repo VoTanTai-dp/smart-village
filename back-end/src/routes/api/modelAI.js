@@ -10,11 +10,14 @@ const router = express.Router();
  *   name: ModelAI
  *   description: Quản lý tính năng AI
  */
+
 // Tạo tính năng AI
+
 /**
  * @swagger
  * /modelAI:
  *   post:
+ *     operationId: createModelAI
  *     summary: Tạo mới modelAI
  *     tags: [ModelAI]
  *     security:
@@ -53,6 +56,7 @@ router.post('/', upload.none(), modelAIController.createModelAI);
  * @swagger
  * /modelAI:
  *   get:
+ *     operationId: getAllModelAIs
  *     summary: Lấy danh sách modelAIs
  *     tags: [ModelAI]
  *     security:
@@ -86,17 +90,13 @@ router.get('/', modelAIController.getAllModelAIs);
  * @swagger
  * /modelAI/{id}:
  *   get:
+ *     operationId: getModelAIById
  *     summary: Lấy chi tiết modelAI
  *     tags: [ModelAI]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID modelAI
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết modelAI thành công
@@ -123,17 +123,13 @@ router.get('/:id', modelAIController.getModelAIById);
  * @swagger
  * /modelAI/{id}:
  *   put:
+ *     operationId: updateModelAI
  *     summary: Cập nhật modelAI
  *     tags: [ModelAI]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID modelAI
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +164,13 @@ router.put('/:id', upload.none(), modelAIController.updateModelAI);
  * @swagger
  * /modelAI/{id}:
  *   delete:
+ *     operationId: deleteModelAIbyId
  *     summary: Xóa modelAI
  *     tags: [ModelAI]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID modelAI
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa modelAI thành công
@@ -200,6 +192,7 @@ router.delete('/:id', modelAIController.deleteModelAI);
  * @swagger
  * /modelAI:
  *   delete:
+ *     operationId: deleteAllModelAI
  *     summary: Xóa tất cả modelAI
  *     tags: [ModelAI]
  *     security:

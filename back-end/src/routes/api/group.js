@@ -15,6 +15,7 @@ const router = express.Router();
  * @swagger
  * /groups:
  *   post:
+ *     operationId: createGroup
  *     summary: Tạo mới group
  *     tags: [Groups]
  *     security:
@@ -53,6 +54,7 @@ router.post('/', upload.none(), groupController.createGroup);
  * @swagger
  * /groups:
  *   get:
+ *     operationId: getAllGroups
  *     summary: Lấy danh sách groups
  *     tags: [Groups]
  *     security:
@@ -86,17 +88,13 @@ router.get('/', groupController.getAllGroups);
  * @swagger
  * /groups/{id}:
  *   get:
+ *     operationId: getGroupById
  *     summary: Lấy chi tiết group
  *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Lấy chi tiết group thành công
@@ -123,17 +121,13 @@ router.get('/:id', groupController.getGroupById);
  * @swagger
  * /groups/{id}:
  *   put:
+ *     operationId: updateGroup
  *     summary: Cập nhật group
  *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group
+ *       - $ref: '#/components/parameters/IdParam'
  *     requestBody:
  *       required: true
  *       content:
@@ -168,17 +162,13 @@ router.put('/:id', upload.none(), groupController.updateGroup);
  * @swagger
  * /groups/{id}:
  *   delete:
+ *     operationId: deleteGroupById
  *     summary: Xóa group
  *     tags: [Groups]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID group
+ *       - $ref: '#/components/parameters/IdParam'
  *     responses:
  *       200:
  *         description: Xóa group thành công
@@ -200,6 +190,7 @@ router.delete('/:id', groupController.deleteGroup);
  * @swagger
  * /groups:
  *   delete:
+ *     operationId: deleteAllGroup
  *     summary: Xóa tất cả group
  *     tags: [Groups]
  *     security:
