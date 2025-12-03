@@ -4,10 +4,7 @@
     "password": null,
     "database": "smartvillage",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "define": {
-      "freezeTableName": true
-    }
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",
