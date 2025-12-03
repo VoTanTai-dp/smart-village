@@ -7,7 +7,7 @@ const createGroup_Role = async (payload) => {
 
 const getAllGroup_Roles = async ({ page, limit }) => {
     const offset = (page - 1) * limit;
-    const { rows, group_role } = await db.Group_Role.findAndCountAll({
+    const { rows, count } = await db.Group_Role.findAndCountAll({
         offset,
         limit,
         order: [['id', 'ASC']],
@@ -17,25 +17,37 @@ const getAllGroup_Roles = async ({ page, limit }) => {
         meta: {
             page,
             limit,
-            total: group_role,
-            totalPages: Math.ceil(group_role / limit),
+            total: count,
+            totalPages: Math.ceil(count / limit),
         },
     };
 }
 
 const getGroup_RoleById = async (id) => {
-    return db.Group_Role.findByPk(id);
+    return db.Group_Role.findOne({
+        where: {
+            id: id
+        }
+    });
 }
 
 const updateGroup_Role = async (id, payload) => {
-    const group_role = await db.Group_Role.findByPk(id);
+    const group_role = await db.Group_Role.findOne({
+        where: {
+            id: id
+        }
+    });
     if (!group_role) return null;
     await group_role.update(payload);
     return group_role;
 };
 
 const deleteGroup_Role = async (id) => {
-    const group_role = await db.Group_Role.findByPk(id);
+    const group_role = await db.Group_Role.findOne({
+        where: {
+            id: id
+        }
+    });
     if (!group_role) return null;
     await group_role.destroy();
     return group_role;

@@ -1,3 +1,4 @@
+import { where } from 'sequelize/lib/sequelize';
 import db from '../models';
 
 const createCamera_Model = async (payload) => {
@@ -7,7 +8,7 @@ const createCamera_Model = async (payload) => {
 
 const getAllCamera_Models = async ({ page, limit }) => {
     const offset = (page - 1) * limit;
-    const { rows, camera_model } = await db.Camera_Model.findAndCountAll({
+    const { rows, count } = await db.Camera_Model.findAndCountAll({
         offset,
         limit,
         order: [['id', 'ASC']],
@@ -17,25 +18,45 @@ const getAllCamera_Models = async ({ page, limit }) => {
         meta: {
             page,
             limit,
-            total: camera_model,
-            totalPages: Math.ceil(camera_model / limit),
+            total: count,
+            totalPages: Math.ceil(count / limit),
         },
     };
 }
 
 const getCamera_ModelById = async (id) => {
-    return db.Camera_Model.findByPk(id);
+    return db.Camera_Model.findOne({
+        where: {
+            id: id
+        }
+    }
+    );
 }
 
 const updateCamera_Model = async (id, payload) => {
-    const camera_model = await db.Camera_Model.findByPk(id);
-    if (!camera_model) return null;
-    await camera_model.update(payload);
+    const camera_model = await db.Camera_Model.findOne({
+        where: {
+            id: id
+        }
+    });
+    if (!camera_model) {
+        return null
+    }
+    await camera_model.update(
+        {
+            cameraId: payload.cameraId,
+            modelAIId: payload.modelAIId
+        }
+    );
     return camera_model;
 };
 
 const deleteCamera_Model = async (id) => {
-    const camera_model = await db.Camera_Model.findByPk(id);
+    const camera_model = await db.Camera_Model.findOne({
+        where: {
+            id: id
+        }
+    });
     if (!camera_model) return null;
     await camera_model.destroy();
     return camera_model;
