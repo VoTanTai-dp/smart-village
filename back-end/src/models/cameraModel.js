@@ -14,13 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Camera_Model.init({
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     cameraId: DataTypes.INTEGER,
     modelAIId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Camera_Model',
-    tableName: 'Camera_Model', // Chỉ định chính xác tên bảng trong DB (giống migration)
-    freezeTableName: true,
+    // tableName: 'Camera_Model', // Chỉ định chính xác tên bảng trong DB (giống migration)
+    // freezeTableName: true,
   });
   return Camera_Model;
 };

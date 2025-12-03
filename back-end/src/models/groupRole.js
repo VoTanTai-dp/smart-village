@@ -14,13 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Group_Role.init({
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     groupId: DataTypes.INTEGER,
     roleID: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Group_Role',
-    tableName: 'Group_Role', // Chỉ định chính xác tên bảng trong DB (giống migration)
-    freezeTableName: true
+    // tableName: 'Group_Role', // Chỉ định chính xác tên bảng trong DB (giống migration)
+    // freezeTableName: true
   });
   return Group_Role;
 };
