@@ -64,10 +64,8 @@ const getUserById = async (id) => {
 const updateUser = async (id, payload) => {
     const user = await db.User.findByPk(id);
     if (!user) return null;
-    if (payload.password) {
-        let hashPass = hashUserPassword(payload.password);
-        payload.password = hashPass;
-    }
+    let hashPass = hashUserPassword(payload.password);
+    payload.password = hashPass;
     await user.update(payload);
     return user;
 };

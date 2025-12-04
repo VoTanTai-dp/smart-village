@@ -41,6 +41,8 @@ const getCameraById = async (id) => {
 const updateCamera = async (id, payload) => {
     const camera = await db.Camera.findByPk(id);
     if (!camera) return null;
+    let hashPass = hashUserPassword(payload.password);
+    payload.password = hashPass;
     await camera.update(payload);
     return camera;
 }
