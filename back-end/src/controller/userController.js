@@ -146,11 +146,32 @@ const deleteAllUsers = async (req, res) => {
     }
 };
 
+const handleLogin = async (req, res) => {
+    try {
+
+        let data = await userService.handleUserLogin(req.body);
+
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT
+        })
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'Error from server',
+            EC: '-1',
+            DT: ''
+        }
+    }
+};
+
 export default {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
     deleteUser,
-    deleteAllUsers
+    deleteAllUsers,
+    handleLogin
 };

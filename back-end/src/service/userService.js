@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 import Bluebird from 'bluebird';
 import { raw } from 'body-parser';
+import { Op } from 'sequelize';
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -122,32 +123,50 @@ const deleteAllUsers = async () => {
     await db.User.destroy({ where: {}, truncate: true });
 }
 
-// const getUserList = async () => {
-//     let users = [];
-//     users = await db.User.findAll();
-//     return users;
-// }
+const checkPassword = (inputPassword, hashPass) => {
+    return bcrypt.compareSync(inputPassword, hashPass); //true or false
+}
 
-// const deleteUser = async (userId) => {
-//     await db.User.destroy({
-//         where: { id: userId }
-//     });
-// }
+const handleUserLogin = async (payload) => {
+    try {
+        let user = await db.User.findOne({
+            where: {
+                [Op.or]: [
+                    { email: payload.valueLogin },
+                    { phone: payload.valueLogin }
+                ]
+            }
+        })
 
-// const getUserById = async (id) => {
-//     let user = {};
-//     user = await db.User.findOne({
-//         where: { id: id }
-//     });
-//     return user.get({ plain: true });
-// }
+        if (user) {
+            let isCorrectPassword = checkPassword(payload.password, user.password);
 
-// const updateUserInfor = async (id, email, username) => {
-//     await db.User.update(
-//         { email: email, username: username },
-//         { where: { id: id } }
-//     );
-// }
+            if (isCorrectPassword === true) {
+                return {
+                    EM: 'Login successfully',
+                    EC: '0',
+                    DT: ''
+                }
+            }
+        }
+
+        console.log('>>> Not found email/phone number', payload.valueLogin, 'password', payload.password);
+
+        return {
+            EM: 'Your email/phone number or password is incorrect',
+            EC: '1',
+            DT: ''
+        }
+
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'Error from server',
+            EC: '-1',
+            DT: ''
+        }
+    }
+}
 
 module.exports = {
     createUser,
@@ -156,6 +175,8 @@ module.exports = {
     updateUser,
     deleteUser,
     deleteAllUsers,
+    checkPassword,
+    handleUserLogin
     // createNewUser,
     // getUserList,
     // updateUserInfor
