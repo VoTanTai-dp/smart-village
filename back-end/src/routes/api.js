@@ -24,7 +24,7 @@ const initApiRoutes = (app) => {
     router.use('/modelAI', modelAIRouter);
     router.use('/camera_model', cameraModelRouter);
 
-    app.use('/api', router);
+    app.use('/api/v1', router);
     return app;
 };
 
