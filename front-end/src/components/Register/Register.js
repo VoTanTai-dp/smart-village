@@ -1,5 +1,6 @@
 import './Register.scss';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
 
 const Register = (props) => {
     let history = useHistory();
