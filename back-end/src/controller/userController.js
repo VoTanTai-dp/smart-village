@@ -5,26 +5,26 @@ const createUser = async (req, res) => {
         // console.log("Body data:", req.body); // Log để debug xem đã nhận được text chưa
         // console.log("File data:", req.file); // Log để xem file ảnh (nếu có)
 
-        if (!req.body.password) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password is required',
-                errorCode: 'PASSWORD_REQUIRED'
+        if (!req.body.email || !req.body.phone || !req.body.password || !req.body.username) {
+            return res.status(200).json({
+                EM: 'Missing required fields',
+                EC: '1',
+                DT: ''
             });
         }
 
         const newUser = await userService.createUser(req.body);
         return res.status(201).json({
-            success: true,
-            message: 'User created successfully',
-            data: newUser
+            EM: newUser.EM,
+            EC: newUser.EC,
+            DT: ''
         });
     } catch (e) {
         console.error(e);
         return res.status(500).json({
-            success: false,
-            message: 'Internal server error',
-            errorCode: e.code || 'INTERNAL_SERVER_ERROR'
+            EM: 'Internal server error',
+            EC: '-1',
+            DT: ''
         });
     }
 };

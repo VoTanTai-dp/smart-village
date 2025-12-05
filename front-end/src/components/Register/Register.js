@@ -82,18 +82,13 @@ const Register = (props) => {
     }
 
     const handleRegister = () => {
-
         let isValid = isValidImputs();
 
-        let userData = { email, phone, username, password, confirmPassword };
-
         if (isValid) {
-            axios.get('http://localhost:8080/api/v1/users', userData).then(data => {
-                console.log('>>> check data:', data);
-            })
+            axios.post('http://localhost:8080/api/v1/users',
+                { email, phone, username, password }
+            )
         }
-
-        console.log(userData);
     }
 
     return (

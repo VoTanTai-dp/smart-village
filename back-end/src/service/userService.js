@@ -11,30 +11,71 @@ const hashUserPassword = (password) => {
     return hashPassword;
 }
 
-// const createNewUser = async (email, username, password) => {
-//     let hashPass = hashUserPassword(password);
+const checkUserEmailExists = async (email) => {
+    let user = await db.User.findOne({
+        where: { email: email }
+    });
+    if (user) {
+        return true;
+    }
+    return false;
+}
 
-//     try {
-//         await db.User.create({
-//             email: email,
-//             username: username,
-//             password: hashPass
-//         })
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
+const checkPhoneExists = async (phone) => {
+    let user = await db.User.findOne({
+        where: { phone: phone }
+    });
+    if (user) {
+        return true;
+    }
+    return false;
+}
 
 const createUser = async (payload) => {
-    if (!payload.password) {
-        throw new Error('Password is required');
+    try {
+        //checkemail/phone number exists
+        let isEmailExists = await checkUserEmailExists(payload.email);
+        if (isEmailExists === true) {
+            return {
+                EM: 'Email already exists',
+                EC: '1',
+                DT: ''
+            }
+        }
+        let isPhoneExists = await checkPhoneExists(payload.phone);
+        if (isPhoneExists === true) {
+            return {
+                EM: 'Phone number already exists',
+                EC: '1',
+                DT: ''
+            }
+        }
+
+        // hash password
+        let hashPass = hashUserPassword(payload.password);
+
+        // create user
+        await db.User.create({
+            email: payload.email,
+            username: payload.username,
+            phone: payload.phone,
+            password: hashPass
+        });
+
+        return {
+            EM: 'Create user successfully',
+            EC: '0',
+            DT: ''
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'Error from server',
+            EC: '-1',
+            DT: ''
+        }
     }
 
-    let hashPass = hashUserPassword(payload.password);
-    payload.password = hashPass;
-
-    const user = await db.User.create(payload);
-    return user;
 };
 
 const getAllUsers = async ({ page, limit }) => {
