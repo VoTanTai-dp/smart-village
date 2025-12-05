@@ -1,5 +1,6 @@
 import express from 'express';
 import configViewEngine from './config/viewEngine';
+import configCors from './config/cors';
 import initeWebRoutes from './routes/web';
 //repuire('dotenv').config();
 import bodyParser from 'body-parser';
@@ -12,24 +13,8 @@ import initApiRoutes from './routes/api';
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-//add header before the routes are defined
-app.use((req, res, next) => {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', process.env.REACT_URL);
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    //set to true if you need the website to include cookies in the requests sent
-    //to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    //pass to next layer of middleware
-    next();
-})
+//config cors
+configCors(app);
 
 //config view engine
 configViewEngine(app);
