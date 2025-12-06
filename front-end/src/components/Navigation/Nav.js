@@ -7,9 +7,8 @@ const Nav = (props) => {
         <div>
             <div className="topnav">
                 <NavLink to="/" exact>Home</NavLink>
-                <NavLink to="/news">News</NavLink>
-                <NavLink to="/contact">Contact</NavLink>
-                <NavLink to="/about">About</NavLink>
+                <NavLink to="/camera">Camera</NavLink>
+                <NavLink to="/modelai">Model AI</NavLink>
             </div>
         </div>
     );
