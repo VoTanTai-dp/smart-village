@@ -1,0 +1,93 @@
+@import '../../styles/variables';
+
+.homepage-container {
+    background-color: $bg-dark;
+    min-height: 100vh;
+    color: $text-white;
+
+    .max-w-2xl {
+        max-width: 42rem;
+    }
+
+    .text-secondary-custom {
+        color: #92c0c9;
+        font-size: 0.875rem;
+    }
+
+    .border-white-10 {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .bg-primary-subtle {
+        background-color: rgba($primary-color, 0.2);
+    }
+
+    .hero-section {
+        .hero-bg {
+            background-image: linear-gradient(rgba(16, 31, 34, 0.6) 0%, rgba(16, 31, 34, 0.9) 100%),
+                url("https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&q=80&w=2000"); // Ảnh Rural landscape
+            background-size: cover;
+            background-position: center;
+            min-height: 480px;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+
+            @media (min-width: 768px) {
+                font-size: 3rem;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            color: $text-white-80;
+
+            @media (min-width: 768px) {
+                font-size: 1.125rem;
+            }
+        }
+    }
+
+    // Features Section
+    .features-section {
+        .section-title {
+            font-size: 2rem;
+
+            @media (min-width: 768px) {
+                font-size: 2.5rem;
+            }
+        }
+
+        .section-desc {
+            color: $text-white-80;
+            max-width: 720px;
+        }
+
+        .feature-card {
+            .feature-img {
+                width: 100%;
+                aspect-ratio: 16/9;
+                background-color: #333;
+                background-size: cover;
+                background-position: center;
+                border-radius: 0.5rem;
+            }
+        }
+    }
+
+    // Testimonials
+    .testimonial-card {
+        background-color: rgba(255, 255, 255, 0.05); // bg-white/5
+    }
+
+    // Footer
+    .footer {
+        .hover-primary:hover {
+            color: $primary-color !important;
+        }
+    }
+}
