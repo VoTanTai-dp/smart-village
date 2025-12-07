@@ -5,14 +5,17 @@ import {
 import Login from "../components/Login/Login";
 import Register from "../components/Register/Register";
 import HomePage from '../components/HomePage/HomePage';
+import Camera from "../components/Camera/Camera";
+import PrivateRoutes from "./PrivateRoutes";
+import ModelAI from "../components/ModelAI/ModelAI";
 
 const AppRoutes = (props) => {
     return (
         <>
             <Switch>
-                <Route path="/" exact>
-                    <HomePage />
-                </Route>
+                <PrivateRoutes path="/camera" component={Camera} />
+
+                <PrivateRoutes path="/modelai" component={ModelAI} />
 
                 <Route path="/login">
                     <Login />
@@ -21,13 +24,8 @@ const AppRoutes = (props) => {
                 <Route path="/register">
                     <Register />
                 </Route>
-
-                <Route path="/camera">
-                    Camera
-                </Route>
-
-                <Route path="/modelai">
-                    Model AI
+                <Route path="/" exact>
+                    <HomePage />
                 </Route>
 
                 <Route path="*">
