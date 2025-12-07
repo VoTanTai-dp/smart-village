@@ -1,6 +1,33 @@
+@import './styles/variables';
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap');
 
 body {
-    // Các style chung cho toàn app
     font-family: 'Manrope', sans-serif;
+    background-color: $bg-dark; // Đặt nền tối cho toàn bộ App
+    color: $text-white;
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    background-color: $bg-dark;
+    min-height: 100vh;
+}
+
+// Global scrollbar style
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: $bg-dark;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: $primary-color;
 }
