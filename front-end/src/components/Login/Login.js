@@ -1,9 +1,8 @@
 import './Login.scss';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-import { use, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { loginUser } from '../../services/userService';
-import { useEffect } from 'react';
 
 const Login = (props) => {
     let history = useHistory();
@@ -32,23 +31,24 @@ const Login = (props) => {
             return;
         }
 
-        let response = await loginUser(valueLogin, password);
+        try {
+            let response = await loginUser(valueLogin, password);
+            let serverData = response.data;
 
-        let serverData = response.data;
-
-        if (response && response.data && +serverData.EC === 0) {
-            toast.success(serverData.EM);
-            let data = {
-                isAuthenticated: true,
-                token: 'fake token'
+            if (response && response.data && +serverData.EC === 0) {
+                toast.success(serverData.EM);
+                let data = {
+                    isAuthenticated: true,
+                    token: 'fake token' // Bạn nên lấy token thật từ serverData nếu có
+                }
+                sessionStorage.setItem('account', JSON.stringify(data));
+                history.push('/');
+                window.location.reload();
+            } else {
+                toast.error(serverData.EM);
             }
-            sessionStorage.setItem('account', JSON.stringify(data));
-            history.push('/');
-            window.location.reload();
-        }
-
-        if (response && response.data && +serverData.EC !== 0) {
-            toast.error(serverData.EM);
+        } catch (e) {
+            toast.error("Error from server or connection refused");
         }
     }
 
@@ -66,51 +66,78 @@ const Login = (props) => {
         let session = sessionStorage.getItem('account');
         if (session) {
             history.push('/');
-            window.location.reload();
         }
-    }, []);
+    }, [history]);
 
     return (
         <div className="login-container">
-            <div className="container">
-                <div className="row px-3 px-sm-0">
-                    <div className="content-left col-12 d-none col-sm-7 d-sm-flex flex-column">
-                        <div className='brand'>
-                            Smart Portal Website
+            <div className="login-content d-flex align-items-center justify-content-center">
+                <div className="login-card shadow-lg">
+                    {/* Header Section */}
+                    <div className="text-center mb-5">
+                        <div className="d-inline-flex align-items-center justify-content-center mb-3">
+                            <div className="brand-logo">
+                                <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <path clipRule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fillRule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h1 className="brand-name ms-3 mb-0">Smart Rural Management Portal</h1>
                         </div>
-                        <div className='detail'>
-                            Smart Portal Website for manage village
-                        </div>
+                        <h2 className="title-login">Log In to Your Account</h2>
+                        <p className="sub-title">Welcome! Please enter your information</p>
                     </div>
 
-                    <div className="content-right col-sm-5 col-12 d-flex flex-column gap-3 py-3">
-                        <div className='brand d-sm-none'>
-                            Smart Portal Website
+                    {/* Form Section */}
+                    <div className="form-input-section d-flex flex-column gap-3">
+                        {/* Email/Phone Input */}
+                        <div className="form-group">
+                            <label className="form-label">Email address or phone number</label>
+                            <input
+                                type="text"
+                                className={`form-control custom-input ${objValidInput.isValidValueLogin ? '' : 'is-invalid'}`}
+                                placeholder="you@example.com"
+                                value={valueLogin}
+                                onChange={(event) => setValueLogin(event.target.value)}
+                            />
                         </div>
-                        <input type="text" className={objValidInput.isValidValueLogin ? 'form-control' : 'form-control is-invalid'} placeholder="Email address or phone number"
-                            value={valueLogin} onChange={(event) => { setValueLogin(event.target.value) }}
-                        />
 
-                        <input type="password" className={objValidInput.isValidPassword ? 'form-control' : 'form-control is-invalid'} placeholder="Password"
-                            value={password} onChange={(event) => { setPassword(event.target.value) }}
-                            onKeyDown={(event) => handlePressEnter(event)}
-                        />
-
-                        <button type="submit" className="btn btn-primary" onClick={() => handleLogin()}>Login</button>
-                        <span className=" text-center">
-                            <a className='forgot' href="#">Forgot password?</a>
-                        </span>
-                        <hr />
-                        <div className='text-center'>
-                            <button type="submit" className="btn btn-success" onClick={() => handleCreateNewAccount()}>
-                                Create New Account
-                            </button>
+                        {/* Password Input */}
+                        <div className="form-group">
+                            {/* <div className="d-flex justify-content-between align-items-center mb-2">
+                                <label className="form-label mb-0">Password</label>
+                                <a className="forgot-password" href="#">Forgot password?</a>
+                            </div> */}
+                            <label className="form-label">Password</label>
+                            <input
+                                type="password"
+                                className={`form-control custom-input ${objValidInput.isValidPassword ? '' : 'is-invalid'}`}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
+                                onKeyDown={(event) => handlePressEnter(event)}
+                            />
                         </div>
+
+                        {/* Login Button */}
+                        <button
+                            type="button"
+                            className="btn btn-primary custom-btn w-100 mt-3"
+                            onClick={() => handleLogin()}
+                        >
+                            Log In
+                        </button>
+                    </div>
+
+                    {/* Sign up button */}
+                    <div className="text-center mt-4">
+                        <p className="footer-text">Don't have an account?
+                            <span className="sign-up-link ms-1" onClick={() => handleCreateNewAccount()}>
+                                Sign up
+                            </span>
+                        </p>
                     </div>
                 </div>
-
             </div>
-
         </div>
     );
 };

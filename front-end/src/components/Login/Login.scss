@@ -1,43 +1,64 @@
+@import '../../styles/variables';
+
 .login-container {
-    background-color: #f0f2f5;
+    background-color: $bg-dark;
     min-height: 100vh;
-    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    .content-left {
-        justify-content: center;
-        align-items: center;
-
-        .brand {
-            font-size: 40px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #1877f2;
-        }
-
-        .detail {
-            font-size: 20px;
-        }
+    .login-content {
+        width: 100%;
+        padding: 1rem;
     }
 
-    .content-right {
-        .brand {
-            font-size: 20px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #1877f2;
-            text-align: center;
+    .login-card {
+        background-color: $card-dark;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 0.75rem;
+        padding: 2rem;
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            color: $primary-color;
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
         }
 
-        // justify-content: center;
-        // align-items: center;
-        border-radius: 8px;
-        background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0 0 0 / 10%),
-        0 8px 16px rgba(0 0 0 / 10%);
-        box-sizing: border-box;
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: $text-white;
+        }
+
+        .title-login {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $text-white;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-title {
+            color: $text-white-60;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            color: $text-white-80;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
 
         .forgot-password {
-            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $primary-color;
             text-decoration: none;
 
             &:hover {
@@ -45,6 +66,62 @@
             }
         }
 
+        .custom-input {
+            background-color: $input-bg;
+            border: 1px solid $input-border;
+            color: $text-white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
 
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+
+            &:focus {
+                background-color: $input-bg;
+                border-color: $primary-color;
+                box-shadow: 0 0 0 0.25rem rgba($primary-color, 0.25);
+                color: $text-white;
+            }
+
+            &.is-invalid {
+                border-color: #dc3545;
+            }
+        }
+
+        .custom-btn {
+            background-color: $primary-color;
+            border: none;
+            color: $bg-dark;
+            font-weight: 700;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: darken($primary-color, 10%);
+                color: $bg-dark;
+            }
+        }
+
+        .footer-text {
+            color: $text-white-60;
+            font-size: 0.875rem;
+            margin-bottom: 0;
+
+            .sign-up-link {
+                color: $primary-color;
+                font-weight: 500;
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
     }
 }
