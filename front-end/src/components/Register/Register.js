@@ -100,7 +100,7 @@ const Register = (props) => {
 
     useEffect(() => {
         let session = sessionStorage.getItem('account');
-        if (!session) {
+        if (session) {
             history.push('/');
             window.location.reload();
         }
