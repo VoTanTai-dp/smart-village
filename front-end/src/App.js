@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { use } from "react";
 import { useEffect, useState } from "react";
-import _ from "lodash";
 import AppRoutes from "./routes/AppRoutes";
 
 function App() {
@@ -21,8 +20,7 @@ function App() {
     <>
       <Router>
         <div className="app-header">
-          {account && !_.isEmpty(account) && account.isAuthenticated && <Nav />}
-          {/* <Nav /> */}
+          <Nav />
         </div>
 
         <div className='app-container'>
