@@ -78,6 +78,12 @@ const Register = (props) => {
         return true;
     }
 
+    const handlePressEnter = (event) => {
+        if (event.key === 'Enter') {
+            handleRegister();
+        }
+    }
+
     const handleRegister = async () => {
         let isValid = isValidImputs();
 
@@ -178,6 +184,7 @@ const Register = (props) => {
                                 placeholder="Re-enter Password"
                                 value={confirmPassword}
                                 onChange={(event) => setConfirmPassword(event.target.value)}
+                                onKeyDown={(event) => handlePressEnter(event)}
                             />
                         </div>
 
