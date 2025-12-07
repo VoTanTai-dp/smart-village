@@ -98,6 +98,14 @@ const Register = (props) => {
         }
     }
 
+    useEffect(() => {
+        let session = sessionStorage.getItem('account');
+        if (!session) {
+            history.push('/');
+            window.location.reload();
+        }
+    }, []);
+
     return (
         <div className="register-container">
             <div className="container">
