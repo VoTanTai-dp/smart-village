@@ -8,12 +8,15 @@ import HomePage from '../components/HomePage/HomePage';
 import Camera from "../components/Camera/Camera";
 import PrivateRoutes from "./PrivateRoutes";
 import ModelAI from "../components/ModelAI/ModelAI";
+import Dashboard from "../components/Dashboard/Dashboard";
 
 const AppRoutes = (props) => {
     return (
         <>
             <Switch>
                 <PrivateRoutes path="/camera" component={Camera} />
+
+                <PrivateRoutes path='/dashboard' component={Dashboard} />
 
                 <PrivateRoutes path="/modelai" component={ModelAI} />
 

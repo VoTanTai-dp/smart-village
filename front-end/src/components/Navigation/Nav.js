@@ -69,7 +69,9 @@ const Nav = (props) => {
                         <div className="d-none d-md-flex flex-grow-1 justify-content-end align-items-center gap-4">
                             <div className="nav-links d-flex gap-4">
                                 <NavLink to="/camera" className="nav-item">Camera</NavLink>
+                                <NavLink to="/dashboard" className="nav-item">Dashboard</NavLink>
                                 <NavLink to="/modelai" className="nav-item">Model AI</NavLink>
+                                <NavLink to="/database" className="nav-item">Database</NavLink>
                             </div>
 
                             {/* 4. Render có điều kiện cho Desktop */}
@@ -82,7 +84,7 @@ const Nav = (props) => {
                                     </>
                                 ) : (
                                     // Đã đăng nhập: Hiện nút Logout
-                                    <button className="btn btn-danger btn-sm fw-bold" onClick={handleLogout}>Log Out</button>
+                                    <button className="btn btn-danger btn-sm fw-bold" onClick={handleLogout}><i class="bi bi-box-arrow-right" style={{ fontSize: "1rem" }}></i></button>
                                 )}
                             </div>
                         </div>
@@ -99,7 +101,9 @@ const Nav = (props) => {
                     {isMobileMenuOpen && (
                         <div className="mobile-menu d-md-none bg-dark p-3 border-top border-secondary">
                             <NavLink to="/camera" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Camera</NavLink>
+                            <NavLink to="/dashboard" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</NavLink>
                             <NavLink to="/modelai" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Model AI</NavLink>
+                            <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
                             <hr className="text-white" />
 
                             {/* 5. Render có điều kiện cho Mobile */}
