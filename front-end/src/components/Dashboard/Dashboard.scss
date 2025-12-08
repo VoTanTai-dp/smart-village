@@ -1,0 +1,179 @@
+@import '../../styles/variables';
+
+.dashboard-container {
+    background-color: $bg-dark;
+    min-height: 100vh;
+    color: $text-white;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+
+    .page-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    // --- Sub Navigation (Tabs) ---
+    .sub-nav {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+
+            a {
+                text-decoration: none;
+                color: $text-muted-dark;
+                font-size: 0.875rem;
+                font-weight: 500;
+                padding-bottom: 0.5rem;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+
+                &:hover {
+                    color: $text-white;
+                }
+
+                &.active {
+                    color: $primary-color;
+                    border-bottom-color: $primary-color;
+                }
+            }
+        }
+
+        .nav-controls {
+            button {
+                background: transparent;
+                border: none;
+                color: $text-white;
+                padding: 0.5rem;
+                border-radius: 50%;
+                transition: background 0.2s;
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+
+                .material-symbols-outlined {
+                    font-size: 1.25rem;
+                }
+            }
+        }
+    }
+
+    // --- Sensor Card ---
+    .sensor-card {
+        background-color: $surface-dark;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .card-header-custom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+
+            .camera-name {
+                color: $primary-color;
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+            }
+
+            .camera-info {
+                font-size: 0.875rem;
+                color: $text-white;
+
+                strong {
+                    color: $text-muted-dark;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        // --- Latest Record Box ---
+        .latest-record-box {
+            background-color: $bg-dark;
+            border-radius: 0.5rem;
+            padding: 1rem;
+
+            .record-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.75rem;
+
+                .label {
+                    color: $text-muted-dark;
+                }
+
+                .value {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    color: $text-white;
+                }
+            }
+
+            .timestamp {
+                font-size: 0.75rem;
+                color: $text-muted-dark;
+                margin-top: 0.5rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                padding-top: 0.5rem;
+            }
+        }
+
+        // --- Historical Table ---
+        .table-responsive {
+            .custom-table {
+                width: 100%;
+                color: $text-white;
+                font-size: 0.875rem;
+
+                thead {
+                    th {
+                        background-color: $bg-dark;
+                        color: $text-muted-dark;
+                        font-weight: 500;
+                        padding: 0.5rem 0.75rem;
+                        border: none;
+
+                        &:first-child {
+                            border-top-left-radius: 0.5rem;
+                            border-bottom-left-radius: 0.5rem;
+                        }
+
+                        &:last-child {
+                            border-top-right-radius: 0.5rem;
+                            border-bottom-right-radius: 0.5rem;
+                        }
+                    }
+                }
+
+                tbody {
+                    tr {
+                        border-bottom: 1px solid $bg-dark;
+
+                        td {
+                            padding: 0.75rem;
+                        }
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
