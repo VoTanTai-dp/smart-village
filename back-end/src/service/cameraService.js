@@ -1,17 +1,33 @@
 import db from '../models';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
+import CryptoJS from 'crypto-js';
 
-const salt = bcrypt.genSaltSync(10);
+// const salt = bcrypt.genSaltSync(10);
 
-const hashUserPassword = (password) => {
-    let hashPassword = bcrypt.hashSync(password, salt);
-    return hashPassword;
-}
+// const hashUserPassword = (password) => {
+//     let hashPassword = bcrypt.hashSync(password, salt);
+//     return hashPassword;
+// }
+
+// KHÓA BÍ MẬT (Nên để trong file .env)
+const SECRET_KEY = process.env.SECRET_KEY;
+
+// Hàm mã hóa (Dùng khi tạo/sửa camera)
+const encryptPassword = (password) => {
+    return CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
+};
+
+// Hàm giải mã (Dùng khi lấy pass để kết nối RTSP)
+const decryptPassword = (encryptedPassword) => {
+    const bytes = CryptoJS.AES.decrypt(encryptedPassword, SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+};
 
 const createCamera = async (payload) => {
-    let hassPass = hashUserPassword(payload.password);
-    payload.password = hassPass;
-
+    // Mã hóa mật khẩu trước khi lưu
+    if (payload.password) {
+        payload.password = encryptPassword(payload.password);
+    }
     const camera = await db.Camera.create(payload);
     return camera;
 };
@@ -38,11 +54,30 @@ const getCameraById = async (id) => {
     return await db.Camera.findByPk(id);
 };
 
+// Hàm lấy thông tin kết nối (đã giải mã pass) cho Controller
+const getCameraCredentials = async (id) => {
+    const camera = await db.Camera.findByPk(id);
+    if (!camera) return null;
+
+    // Giải mã mật khẩu để sử dụng
+    const rawPassword = decryptPassword(camera.password);
+
+    // Trả về object clone với password đã giải mã
+    return {
+        ...camera.get({ plain: true }),
+        password: rawPassword
+    };
+};
+
 const updateCamera = async (id, payload) => {
     const camera = await db.Camera.findByPk(id);
     if (!camera) return null;
-    let hashPass = hashUserPassword(payload.password);
-    payload.password = hashPass;
+
+    // Nếu có đổi password thì mã hóa lại
+    if (payload.password) {
+        payload.password = encryptPassword(payload.password);
+    }
+
     await camera.update(payload);
     return camera;
 }
@@ -65,4 +100,5 @@ module.exports = {
     updateCamera,
     deleteCamera,
     deleteAllCameras,
+    getCameraCredentials
 };

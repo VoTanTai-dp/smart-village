@@ -1,8 +1,8 @@
-import exxpress from 'express';
+import express from 'express';
 import cameraController from '../../controller/cameraController.js';
 import upload from '../../middleware/upload.js';
 
-const router = exxpress.Router();
+const router = express.Router();
 
 /**
  * @swagger
@@ -10,6 +10,12 @@ const router = exxpress.Router();
  *   name: Cameras
  *   description: Quản lý camera
  */
+
+// ==========================================
+// WEBSOCKET ROUTES (Đặt lên đầu cho dễ quản lý)
+// URL: ws://localhost:8080/api/v1/cameras/stream/:id
+// ==========================================
+router.ws('/stream/:id', cameraController.streamCamera);
 
 // Tạo camera
 /**
