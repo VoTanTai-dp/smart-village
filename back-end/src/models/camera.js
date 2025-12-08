@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   Camera.init({
     userId: DataTypes.INTEGER,
     ip: DataTypes.STRING,
+    username: DataTypes.STRING,
     password: DataTypes.STRING,
     port: DataTypes.STRING,
     address: DataTypes.STRING
