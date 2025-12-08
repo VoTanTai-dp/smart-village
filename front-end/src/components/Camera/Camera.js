@@ -44,7 +44,6 @@ const Camera = (props) => {
                                 onClick={() => handleOpenFullscreen(imgSrc)}
                                 title="View Fullscreen"
                             >
-                                {/* <span className="material-symbols-outlined">fullscreen</span> */}
                             </button>
                         </div>
                     </div>
@@ -56,8 +55,7 @@ const Camera = (props) => {
                     <div className="camera-feed empty" onClick={handleShowModal}>
                         <div className="ratio ratio-16x9">
                             <button className="add-camera-btn">
-                                <span className="material-symbols-outlined">+</span>
-                                <span className="text-add">Add Camera</span>
+                                <i class="bi bi-plus-lg" style={{ fontSize: "2rem" }}></i>
                             </button>
                         </div>
                     </div>
@@ -156,7 +154,7 @@ const Camera = (props) => {
                 <div className="fullscreen-overlay fade-in">
                     {/* Nút đóng fullscreen */}
                     <button className="btn-close-fullscreen" onClick={handleCloseFullscreen}>
-                        <span className="material-symbols-outlined">X</span>
+                        <i class="bi bi-x-lg" style={{ fontSize: "2rem" }}></i>
                     </button>
 
                     {/* Ảnh/Video phóng to */}
