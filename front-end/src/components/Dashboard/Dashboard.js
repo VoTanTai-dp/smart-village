@@ -84,7 +84,7 @@ const Dashboard = (props) => {
                                 className={currentPage === 1 ? 'disabled' : ''}
                                 title="Previous Page"
                             >
-                                <i class="bi bi-arrow-left" style={{ fontSize: "1rem" }}></i>
+                                <i className="bi bi-arrow-left" style={{ fontSize: "1rem" }}></i>
                             </button>
 
                             <span className="current-page-badge">
@@ -97,7 +97,7 @@ const Dashboard = (props) => {
                                 className={currentPage === totalPages ? 'disabled' : ''}
                                 title="Next Page"
                             >
-                                <i class="bi bi-arrow-right" style={{ fontSize: "1rem" }}></i>
+                                <i className="bi bi-arrow-right" style={{ fontSize: "1rem" }}></i>
                             </button>
                         </div>
                     </div>
