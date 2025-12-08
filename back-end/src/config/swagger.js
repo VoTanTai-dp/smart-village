@@ -11,7 +11,7 @@ const swaggerDefinition = {
     },
     servers: [
         {
-            url: 'http://localhost:8080/api',
+            url: 'http://localhost:8080/api/v1',
             description: 'Local development',
         },
     ],
@@ -177,6 +177,11 @@ const swaggerDefinition = {
                         type: 'string',
                         example: '192.168.1.10',
                         description: 'Địa chỉ IP của camera'
+                    },
+                    username: {
+                        type: 'string',
+                        example: 'admin',
+                        description: 'Tài khoản truy cập camera'
                     },
                     password: {
                         type: 'string',
