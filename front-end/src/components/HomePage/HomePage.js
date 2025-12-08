@@ -126,27 +126,6 @@ const HomePage = (props) => {
                         </div>
                     </div>
                 </section>
-
-                {/* Footer */}
-                <footer className="footer py-4 border-top border-white-10 mt-4">
-                    <div className="container">
-                        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                            <div className="d-flex align-items-center gap-2">
-                                <span className="text-primary">
-                                    <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" clipRule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" />
-                                    </svg>
-                                </span>
-                                <span className="text-white-60 small">© 2024 Smart Rural Management Portal. All rights reserved.</span>
-                            </div>
-                            <div className="d-flex gap-4">
-                                <a href="#" className="text-white-60 small text-decoration-none hover-primary">Privacy Policy</a>
-                                <a href="#" className="text-white-60 small text-decoration-none hover-primary">Terms of Service</a>
-                                <a href="#" className="text-white-60 small text-decoration-none hover-primary">Contact</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
             </div>
         </div>
     )
