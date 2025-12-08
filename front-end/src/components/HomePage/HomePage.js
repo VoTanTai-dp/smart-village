@@ -6,7 +6,7 @@ const HomePage = (props) => {
     let history = useHistory();
 
     return (
-        <div className="homepage-container">
+        <div className="homepage-container pt-3">
             <div className="content-wrapper">
 
                 {/* Hero Section */}
