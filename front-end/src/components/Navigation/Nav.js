@@ -84,7 +84,7 @@ const Nav = (props) => {
                                     </>
                                 ) : (
                                     // Đã đăng nhập: Hiện nút Logout
-                                    <button className="btn btn-danger btn-sm fw-bold" onClick={handleLogout}><i class="bi bi-box-arrow-right" style={{ fontSize: "1rem" }}></i></button>
+                                    <button className="btn btn-danger btn-sm fw-bold" onClick={handleLogout}><i className="bi bi-box-arrow-right" style={{ fontSize: "1rem" }}></i></button>
                                 )}
                             </div>
                         </div>
