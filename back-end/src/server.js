@@ -9,9 +9,13 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import initApiRoutes from './routes/api';
+import expressWs from 'express-ws';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+//config express-ws
+expressWs(app);
 
 //config cors
 configCors(app);
