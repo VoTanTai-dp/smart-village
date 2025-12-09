@@ -1,3 +1,4 @@
+// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {
@@ -10,6 +11,23 @@ import { toast } from 'react-toastify';
 
 // WebSocket global duy nhất
 let streamWs = null;
+
+// Gom camera theo địa chỉ (address)
+const groupCamerasByAddress = (cameraList) => {
+    const groups = {};
+
+    cameraList.forEach((cam) => {
+        const raw = (cam.address || '').trim();
+        const key = raw || 'Unknown Area';
+
+        if (!groups[key]) {
+            groups[key] = [];
+        }
+        groups[key].push(cam);
+    });
+
+    return groups; // { 'Main Gate': [cam1, cam2], 'Warehouse': [cam3], ... }
+};
 
 const Camera = () => {
     const [inputIP, setInputIP] = useState('');
@@ -60,7 +78,7 @@ const Camera = () => {
 
     const validateInput = () => {
         let valid = true;
-        let newValid = { ...defaultObjValidInput };
+        const newValid = { ...defaultObjValidInput };
 
         if (!inputIP) {
             newValid.isValidIP = false;
@@ -166,7 +184,6 @@ const Camera = () => {
                     if (fullscreenEl) {
                         const ctxFull = fullscreenEl.getContext('2d');
                         if (ctxFull) {
-                            // Option: cập nhật kích thước canvas theo kích thước hiển thị
                             const rect = fullscreenEl.getBoundingClientRect();
                             if (
                                 fullscreenEl.width !== rect.width ||
@@ -191,7 +208,6 @@ const Camera = () => {
                 console.error('Parse stream message error:', e);
             }
         };
-
     };
 
     // Start stream cho 1 camera (FFmpeg backend + đảm bảo WS đã connect)
@@ -350,28 +366,35 @@ const Camera = () => {
         );
     };
 
-    // Ví dụ: chỉ lấy các camera có address = 'main gate' (không đổi)
-    const mainGateCameras = cameras.filter(
-        (cam) => (cam.address || '').toLowerCase() === 'main gate'
-    );
-
-    const slots = [];
-    for (let i = 0; i < 4; i += 1) {
-        const cam = mainGateCameras[i] || null;
-        slots.push(renderCameraSlot(cam, i));
-    }
+    // Nhóm camera theo address
+    const groupedCameras = groupCamerasByAddress(cameras);
+    const addressList = Object.keys(groupedCameras).sort();
 
     return (
         <div className="camera-container">
             <div className="container">
-                <div className="camera-section">
-                    <div className="d-flex align-items-center justify-content-between mb-3">
-                        <h2 className="section-title mb-0">Main Gate</h2>
-                    </div>
-                    <div className="row row-cols-1 row-cols-md-2 g-4">
-                        {slots}
-                    </div>
-                </div>
+                {addressList.map((address) => {
+                    const cams = groupedCameras[address];
+
+                    const slots = [];
+                    const SLOT_COUNT = 4; // 2x2
+
+                    for (let i = 0; i < SLOT_COUNT; i += 1) {
+                        const cam = cams[i] || null;
+                        slots.push(renderCameraSlot(cam, i));
+                    }
+
+                    return (
+                        <div className="camera-section" key={address}>
+                            <div className="d-flex align-items-center justify-content-between mb-3">
+                                <h2 className="section-title mb-0">{address}</h2>
+                            </div>
+                            <div className="row row-cols-1 row-cols-md-2 g-4">
+                                {slots}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Modal connect camera */}
@@ -407,8 +430,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidIP
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 192.168.1.100"
                                                 value={inputIP}
@@ -424,8 +447,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidUsername
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's username"
                                                 value={inputUsername}
@@ -443,8 +466,8 @@ const Camera = () => {
                                             <input
                                                 type="password"
                                                 className={`form-control custom-input ${objValidInput.isValidPassword
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's password"
                                                 value={inputPassword}
@@ -462,8 +485,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidPort
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 554"
                                                 value={inputPort}
@@ -479,8 +502,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidAddress
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., Main Gate"
                                                 value={inputAddress}
