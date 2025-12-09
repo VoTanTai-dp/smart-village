@@ -1,4 +1,3 @@
-// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {
@@ -6,6 +5,8 @@ import {
     createCamera,
     startCameraStream,
     stopCameraStream,
+    stopSingleCameraStream,
+    deleteCamera,
 } from '../../services/cameraStreamService';
 import { toast } from 'react-toastify';
 
@@ -229,6 +230,47 @@ const Camera = () => {
         }
     };
 
+    // Disconnect: stop stream + xóa camera khỏi DB
+    const handleDisconnectCamera = async (cameraId) => {
+        try {
+            // nếu đang stream thì stop trước
+            if (streamingCameraIds.includes(cameraId)) {
+                await stopSingleCameraStream(cameraId);
+            }
+
+            // xóa khỏi database
+            await deleteCamera(cameraId);
+
+            // cập nhật state streaming
+            setStreamingCameraIds((prev) =>
+                prev.filter((id) => id !== cameraId)
+            );
+
+            // cập nhật danh sách cameras
+            setCameras((prev) => prev.filter((cam) => cam.id !== cameraId));
+
+            // clear canvas
+            const canvasEl = canvasRefs.current[cameraId];
+            if (canvasEl) {
+                const ctx = canvasEl.getContext('2d');
+                if (ctx) {
+                    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                }
+            }
+            delete canvasRefs.current[cameraId];
+
+            // nếu đang fullscreen camera này thì đóng fullscreen
+            if (fullscreenCameraIdRef.current === cameraId) {
+                handleCloseFullscreen();
+            }
+
+            toast.success('Camera disconnected and removed');
+        } catch (error) {
+            console.error('handleDisconnectCamera error:', error);
+            toast.error('Failed to disconnect camera');
+        }
+    };
+
     // Stop toàn bộ stream (dùng khi unmount page)
     const stopAllStreams = async () => {
         try {
@@ -336,6 +378,7 @@ const Camera = () => {
                                 </div>
                             )}
 
+                            {/* Nút fullscreen / start stream */}
                             <button
                                 className="btn-fullscreen-trigger"
                                 onClick={(e) => {
@@ -348,6 +391,18 @@ const Camera = () => {
                                 }}
                                 title="View Fullscreen"
                             />
+
+                            {/* Nút disconnect: stop stream + delete */}
+                            <button
+                                className="btn-disconnect"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDisconnectCamera(camera.id);
+                                }}
+                                title="Disconnect camera"
+                            >
+                                <i className="bi bi-power" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -517,13 +572,13 @@ const Camera = () => {
                                                         e.target.value
                                                     )
                                                 }
-                                                onKeyDown={(event) => {
-                                                    if (
-                                                        event.key === 'Enter'
-                                                    ) {
-                                                        handleConnectCamera();
+                                                onKeyDown={
+                                                    (e) => {
+                                                        if (e.key === 'Enter') {
+                                                            handleConnectCamera();
+                                                        }
                                                     }
-                                                }}
+                                                }
                                             />
                                         </div>
                                     </form>

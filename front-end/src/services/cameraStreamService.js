@@ -29,4 +29,25 @@ const stopCameraStream = async () => {
     return res.data;
 };
 
-export { getCameras, createCamera, startCameraStream, stopCameraStream };
+// Stop stream 1 camera
+const stopSingleCameraStream = async (cameraId) => {
+    const res = await axios.post(
+        `${API_BASE}/cameras/${cameraId}/stream/stop`
+    );
+    return res.data;
+};
+
+// Xóa camera khỏi database
+const deleteCamera = async (cameraId) => {
+    const res = await axios.delete(`${API_BASE}/cameras/${cameraId}`);
+    return res.data;
+};
+
+export {
+    getCameras,
+    createCamera,
+    startCameraStream,
+    stopCameraStream,
+    stopSingleCameraStream,
+    deleteCamera,
+};
