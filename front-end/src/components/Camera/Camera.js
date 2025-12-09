@@ -137,6 +137,10 @@ const Camera = (props) => {
                                             <label className="form-label">Port</label>
                                             <input type="text" className="form-control" placeholder="e.g., 554" />
                                         </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">Address</label>
+                                            <input type="text" className="form-control" placeholder="e.g., Main Gate" />
+                                        </div>
                                     </form>
                                 </div>
                                 <div className="modal-footer">
