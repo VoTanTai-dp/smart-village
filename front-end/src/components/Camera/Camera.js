@@ -117,6 +117,11 @@ const Camera = () => {
                 return a.id - b.id;
             });
             setCameras(list);
+
+            // Nếu không có camera nào trong database -> auto mở modal tạo kết nối
+            if (list.length === 0) {
+                setShowModal(true);
+            }
         } catch (error) {
             console.error('loadCameras error:', error);
             toast.error('Failed to load cameras');
@@ -430,8 +435,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidIP
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 192.168.1.100"
                                                 value={inputIP}
@@ -447,8 +452,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidUsername
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's username"
                                                 value={inputUsername}
@@ -466,8 +471,8 @@ const Camera = () => {
                                             <input
                                                 type="password"
                                                 className={`form-control custom-input ${objValidInput.isValidPassword
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's password"
                                                 value={inputPassword}
@@ -485,8 +490,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidPort
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 554"
                                                 value={inputPort}
@@ -502,8 +507,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidAddress
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., Main Gate"
                                                 value={inputAddress}
@@ -512,6 +517,13 @@ const Camera = () => {
                                                         e.target.value
                                                     )
                                                 }
+                                                onKeyDown={(event) => {
+                                                    if (
+                                                        event.key === 'Enter'
+                                                    ) {
+                                                        handleConnectCamera();
+                                                    }
+                                                }}
                                             />
                                         </div>
                                     </form>
