@@ -1,7 +1,6 @@
-// back-end/src/controller/streamController.js
-const streamService = require('../service/streamService');
-const cameraService = require('../service/cameraService.js');
-const config = require('../config/stream.config');
+import streamService from '../service/streamService';
+import cameraService from '../service/cameraService.js';
+import config from '../config/stream.config';
 
 // Kiểm tra tình trạng backend
 const healthCheck = async (req, res) => {

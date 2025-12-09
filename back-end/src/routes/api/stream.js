@@ -1,7 +1,7 @@
-// back-end/src/routes/api/stream.js
-const express = require('express');
+import express from 'express';
+import streamController from '../../controller/streamController';
+
 const router = express.Router();
-const streamController = require('../../controller/streamController');
 
 // Health check backend
 router.get('/stream/health', streamController.healthCheck);

@@ -1,4 +1,3 @@
-// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {

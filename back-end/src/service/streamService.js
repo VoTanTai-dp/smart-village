@@ -1,7 +1,6 @@
-// back-end/src/service/streamService.js
-const WebSocket = require('ws');
-const { spawn } = require('child_process');
-const config = require('../config/stream.config');
+import WebSocket from 'ws';
+import { spawn } from 'child_process';
+import config from '../config/stream.config';
 
 // WebSocket server duy nhất cho toàn hệ thống
 let wss = null;
