@@ -181,18 +181,26 @@
         animation: fadeIn 0.3s ease-out;
 
         .fullscreen-content {
-            width: 90%;
-            height: 90%;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
 
-            img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain; // Giữ tỷ lệ ảnh, không bị méo
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            }
+        .camera-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background-color: #000;
+        }
+
+        .camera-canvas-fullscreen {
+            width: 90%;
+            height: 90%;
+            display: block;
+            background-color: #000;
+            border-radius: 10px;
         }
 
         .btn-close-fullscreen {

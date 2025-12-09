@@ -1,13 +1,5 @@
 import db from '../models';
-// import bcrypt from 'bcryptjs';
 import CryptoJS from 'crypto-js';
-
-// const salt = bcrypt.genSaltSync(10);
-
-// const hashUserPassword = (password) => {
-//     let hashPassword = bcrypt.hashSync(password, salt);
-//     return hashPassword;
-// }
 
 // KHÓA BÍ MẬT (Nên để trong file .env)
 const SECRET_KEY = process.env.SECRET_KEY;
