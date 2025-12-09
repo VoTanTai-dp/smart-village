@@ -82,7 +82,7 @@ const Camera = (props) => {
                 </div>
 
                 {/* Section: Warehouse Section */}
-                <div className="camera-section">
+                {/* <div className="camera-section">
                     <div className="d-flex align-items-center justify-content-between mb-3">
                         <h2 className="section-title mb-0">Warehouse Section</h2>
                     </div>
@@ -92,10 +92,10 @@ const Camera = (props) => {
                         {renderCameraSlot(false)}
                         {renderCameraSlot(false)}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Section: Livestock Pens */}
-                <div className="camera-section">
+                {/* <div className="camera-section">
                     <div className="d-flex align-items-center justify-content-between mb-3">
                         <h2 className="section-title mb-0">Livestock Pens</h2>
                     </div>
@@ -105,7 +105,7 @@ const Camera = (props) => {
                         {renderCameraSlot(false)}
                         {renderCameraSlot(false)}
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* --- MODAL CONNECT CAMERA --- */}
