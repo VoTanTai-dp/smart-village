@@ -94,9 +94,28 @@ const stopAllStreams = async (req, res) => {
     }
 };
 
+// Lấy danh sách camera đang stream (cameraId)
+const getStreamingCameras = (req, res) => {
+    try {
+        const activeIds = streamService.getActiveCameraIds();
+        return res.json({
+            success: true,
+            data: activeIds,
+        });
+    } catch (err) {
+        console.error('>>> Get streaming cameras error:', err);
+        return res.status(500).json({
+            success: false,
+            message: 'Get streaming cameras failed',
+            error: err.message,
+        });
+    }
+};
+
 module.exports = {
     healthCheck,
     startStream,
     stopStream,
     stopAllStreams,
+    getStreamingCameras,
 };

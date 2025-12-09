@@ -145,9 +145,15 @@ function stopAllStreams() {
     return Promise.all(ids.map((id) => stopStreaming(id)));
 }
 
+// Lấy danh sách cameraId đang được FFmpeg stream
+function getActiveCameraIds() {
+    return Array.from(streamProcesses.keys());
+}
+
 module.exports = {
     initWebSocketServer,
     startStreaming,
     stopStreaming,
     stopAllStreams,
+    getActiveCameraIds,
 };

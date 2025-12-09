@@ -1,12 +1,13 @@
+// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {
     getCameras,
     createCamera,
     startCameraStream,
-    stopCameraStream,
     stopSingleCameraStream,
     deleteCamera,
+    getStreamingCameraIds,
 } from '../../services/cameraStreamService';
 import { toast } from 'react-toastify';
 
@@ -271,21 +272,12 @@ const Camera = () => {
         }
     };
 
-    // Stop toàn bộ stream (dùng khi unmount page)
-    const stopAllStreams = async () => {
-        try {
-            await stopCameraStream(); // gọi /cameras/stream/stop-all
-        } catch (error) {
-            console.error('stopAllStreams API error:', error);
-        }
-
+    // Dọn dẹp WebSocket + ref khi unmount (không tắt FFmpeg trên backend)
+    const cleanupStreams = () => {
         if (streamWs) {
             streamWs.close();
             streamWs = null;
         }
-        setStreamingCameraIds([]);
-        setFullscreen(false);
-        setFullscreenCameraId(null);
         fullscreenCameraIdRef.current = null;
         canvasRefs.current = {};
     };
@@ -340,11 +332,26 @@ const Camera = () => {
     };
 
     useEffect(() => {
-        loadCameras();
+        const initPage = async () => {
+            await loadCameras();
+            initStreamWebSocket();
+
+            try {
+                const activeIds = await getStreamingCameraIds();
+                if (Array.isArray(activeIds)) {
+                    setStreamingCameraIds(activeIds.map((id) => Number(id)));
+                } else {
+                    setStreamingCameraIds([]);
+                }
+            } catch (error) {
+                console.error('getStreamingCameraIds error:', error);
+            }
+        };
+
+        initPage();
 
         return () => {
-            // Khi rời page Camera → dừng tất cả stream + đóng WS
-            stopAllStreams();
+            cleanupStreams();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -490,8 +497,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidIP
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 192.168.1.100"
                                                 value={inputIP}
@@ -507,8 +514,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidUsername
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's username"
                                                 value={inputUsername}
@@ -525,9 +532,10 @@ const Camera = () => {
                                             </label>
                                             <input
                                                 type="password"
-                                                className={`form-control custom-input ${objValidInput.isValidPassword
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                className={`form-control custom-input ${objValidInput
+                                                        .isValidPassword
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's password"
                                                 value={inputPassword}
@@ -545,8 +553,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidPort
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 554"
                                                 value={inputPort}
@@ -562,8 +570,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidAddress
-                                                    ? ''
-                                                    : 'is-invalid'
+                                                        ? ''
+                                                        : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., Main Gate"
                                                 value={inputAddress}
@@ -572,13 +580,11 @@ const Camera = () => {
                                                         e.target.value
                                                     )
                                                 }
-                                                onKeyDown={
-                                                    (e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleConnectCamera();
-                                                        }
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        handleConnectCamera();
                                                     }
-                                                }
+                                                }}
                                             />
                                         </div>
                                     </form>

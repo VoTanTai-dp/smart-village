@@ -23,7 +23,7 @@ const startCameraStream = async (cameraId) => {
     return res.data;
 };
 
-// Dùng cho "stop tất cả" khi unmount
+// Dùng cho "stop tất cả" nếu cần ở chỗ khác
 const stopCameraStream = async () => {
     const res = await axios.post(`${API_BASE}/cameras/stream/stop-all`);
     return res.data;
@@ -43,6 +43,12 @@ const deleteCamera = async (cameraId) => {
     return res.data;
 };
 
+// Lấy danh sách cameraId đang stream trên backend
+const getStreamingCameraIds = async () => {
+    const res = await axios.get(`${API_BASE}/cameras/stream/status`);
+    return res.data?.data || [];
+};
+
 export {
     getCameras,
     createCamera,
@@ -50,4 +56,5 @@ export {
     stopCameraStream,
     stopSingleCameraStream,
     deleteCamera,
+    getStreamingCameraIds,
 };

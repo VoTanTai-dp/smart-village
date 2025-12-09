@@ -6,6 +6,9 @@ const router = express.Router();
 // Health check backend
 router.get('/stream/health', streamController.healthCheck);
 
+// Lấy danh sách camera đang stream
+router.get('/cameras/stream/status', streamController.getStreamingCameras);
+
 // Start stream cho camera theo id
 router.post('/cameras/:id/stream/start', streamController.startStream);
 
