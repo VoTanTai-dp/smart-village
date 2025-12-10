@@ -196,6 +196,16 @@ const swaggerDefinition = {
                         type: 'string',
                         description: 'Địa chỉ vật lý của camera'
                     },
+                    haTemperatureEntityId: {
+                        type: 'string',
+                        example: 'sensor.sonoff_100170f83e_temperature',
+                        description: 'Home Assistant temperature entity for this camera'
+                    },
+                    haHumidityEntityId: {
+                        type: 'string',
+                        example: 'sensor.sonoff_100170f83e_humidity',
+                        description: 'Home Assistant humidity entity for this camera'
+                    },
                     createdAt: {
                         type: 'string',
                         readOnly: true,
