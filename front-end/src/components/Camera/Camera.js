@@ -1,4 +1,3 @@
-// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {
@@ -37,6 +36,8 @@ const Camera = () => {
     const [inputPassword, setInputPassword] = useState('');
     const [inputPort, setInputPort] = useState('');
     const [inputAddress, setInputAddress] = useState('');
+    const [inputHaTempEntityId, setInputHaTempEntityId] = useState('');
+    const [inputHaHumEntityId, setInputHaHumEntityId] = useState('');
 
     const [cameras, setCameras] = useState([]);
 
@@ -293,6 +294,8 @@ const Camera = () => {
                 password: inputPassword,
                 port: inputPort,
                 address: inputAddress,
+                haTemperatureEntityId: inputHaTempEntityId || undefined,
+                haHumidityEntityId: inputHaHumEntityId || undefined,
             });
 
             toast.success('Camera created successfully');
@@ -302,6 +305,8 @@ const Camera = () => {
             setInputPassword('');
             setInputPort('');
             setInputAddress('');
+            setInputHaTempEntityId('');
+            setInputHaHumEntityId('');
             setShowModal(false);
 
             await loadCameras();
@@ -497,8 +502,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidIP
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 192.168.1.100"
                                                 value={inputIP}
@@ -514,8 +519,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidUsername
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's username"
                                                 value={inputUsername}
@@ -533,9 +538,9 @@ const Camera = () => {
                                             <input
                                                 type="password"
                                                 className={`form-control custom-input ${objValidInput
-                                                        .isValidPassword
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    .isValidPassword
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's password"
                                                 value={inputPassword}
@@ -553,8 +558,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidPort
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 554"
                                                 value={inputPort}
@@ -564,14 +569,35 @@ const Camera = () => {
                                             />
                                         </div>
                                         <div className="mb-3">
+                                            <label className="form-label">HA Temperature Entity ID</label>
+                                            <input
+                                                type="text"
+                                                className="form-control custom-input"
+                                                placeholder="sensor.sonoff_100170f83e_temperature"
+                                                value={inputHaTempEntityId}
+                                                onChange={(e) => setInputHaTempEntityId(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">HA Humidity Entity ID</label>
+                                            <input
+                                                type="text"
+                                                className="form-control custom-input"
+                                                placeholder="sensor.sonoff_100170f83e_humidity"
+                                                value={inputHaHumEntityId}
+                                                onChange={(e) => setInputHaHumEntityId(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
                                             <label className="form-label">
                                                 Address
                                             </label>
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidAddress
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., Main Gate"
                                                 value={inputAddress}

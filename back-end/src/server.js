@@ -11,6 +11,7 @@ import swaggerSpec from './config/swagger';
 import initApiRoutes from './routes/api';
 import expressWs from 'express-ws';
 import streamService from './service/streamService';
+import sensorService from './service/sensorService';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -34,8 +35,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //init api routes
 initApiRoutes(app);
 
-//init web socket
+//init stream web socket
 streamService.initWebSocketServer();
+
+//init sensor web socket
+sensorService.initSensorWebSocketServer();
 
 //connect to database
 // connection();
