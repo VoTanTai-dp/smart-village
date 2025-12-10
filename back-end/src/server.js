@@ -10,12 +10,13 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import initApiRoutes from './routes/api';
 import expressWs from 'express-ws';
+import streamService from './service/streamService';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 //config express-ws
-expressWs(app);
+// expressWs(app);
 
 //config cors
 configCors(app);
@@ -32,6 +33,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //init api routes
 initApiRoutes(app);
+
+//init web socket
+streamService.initWebSocketServer();
 
 //connect to database
 // connection();

@@ -9,6 +9,7 @@ import dataRouter from './api/data.js';
 import countRouter from './api/count.js';
 import modelAIRouter from './api/modelAI.js';
 import cameraModelRouter from './api/cameraModel.js';
+import streamRoute from './api/stream.js';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ const initApiRoutes = (app) => {
     router.use('/modelAI', modelAIRouter);
     router.use('/camera_model', cameraModelRouter);
 
+    app.use('/api/v1', streamRoute);
     app.use('/api/v1', router);
     return app;
 };

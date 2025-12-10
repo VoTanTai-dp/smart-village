@@ -80,6 +80,35 @@
                     }
                 }
 
+                // --- NÚT DISCONNECT ---
+                .btn-disconnect {
+                    position: absolute;
+                    top: 12px;
+                    // right: 12px;
+                    left: 12px;
+                    width: 32px;
+                    height: 32px;
+                    border: none;
+                    border-radius: 50%;
+                    background-color: rgba(220, 53, 69, 0.9);
+                    color: #fff;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    z-index: 6;
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+
+                    i {
+                        font-size: 1rem;
+                    }
+
+                    &:hover {
+                        background-color: #dc3545;
+                    }
+                }
+
                 // Hiệu ứng Hover vào ô Camera
                 &:hover {
                     .camera-image {
@@ -91,6 +120,10 @@
                     .btn-fullscreen-trigger {
                         opacity: 1;
                         transform: translate(-50%, -50%) scale(1);
+                    }
+
+                    .btn-disconnect {
+                        opacity: 1;
                     }
                 }
             }
@@ -135,7 +168,6 @@
     }
 
     .custom-modal {
-
         .modal-content {
             background-color: $bg-dark;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -181,18 +213,26 @@
         animation: fadeIn 0.3s ease-out;
 
         .fullscreen-content {
-            width: 90%;
-            height: 90%;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
 
-            img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain; // Giữ tỷ lệ ảnh, không bị méo
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            }
+        .camera-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background-color: #000;
+        }
+
+        .camera-canvas-fullscreen {
+            width: 90%;
+            height: 90%;
+            display: block;
+            background-color: #000;
+            border-radius: 10px;
         }
 
         .btn-close-fullscreen {
