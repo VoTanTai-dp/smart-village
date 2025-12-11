@@ -38,7 +38,7 @@ const startStream = async (req, res) => {
 
         const rtspUrl = `rtsp://${username}:${encodeURIComponent(
             password
-        )}@${ip}:${port}/cam/realmonitor?channel=1&subtype=0`;
+        )}@${ip}:${port}/ch01/0`;
 
         console.log(`>>> Received RTSP URL (Camera ${cameraId}): ${rtspUrl}`);
 
