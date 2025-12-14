@@ -18,4 +18,7 @@ router.post('/cameras/:id/stream/stop', streamController.stopStream);
 // Stop toàn bộ stream
 router.post('/cameras/stream/stop-all', streamController.stopAllStreams);
 
+// Connect stream bằng credentials (ip, username, password)
+router.post('/cameras/stream/connect', express.json(), streamController.connectStreamByCredentials);
+
 module.exports = router;

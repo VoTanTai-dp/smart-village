@@ -178,10 +178,92 @@ const getStreamingCameras = (req, res) => {
     }
 };
 
+// Connect stream bằng credentials (không tạo bản ghi trùng trong DB)
+const connectStreamByCredentials = async (req, res) => {
+    try {
+        const { ip, username, password, port, address, haTemperatureEntityId, haHumidityEntityId } = req.body || {};
+
+        if (!ip || !username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields (ip, username, password)',
+                errorCode: 'MISSING_CAMERA_INFO',
+            });
+        }
+
+        // Tìm nếu đã có camera với cùng ip/username/password; nếu chưa có thì tạo mới
+        const cameraRow = await cameraService.findOrCreateByCredentials({
+            ip,
+            username,
+            password,
+            port,
+            address,
+            haTemperatureEntityId,
+            haHumidityEntityId,
+        });
+        const cameraId = Number(cameraRow.id);
+
+        // Lấy credentials đã giải mã để build RTSP
+        const camera = await cameraService.getCameraCredentials(cameraId);
+        if (!camera) {
+            return res.status(404).json({
+                success: false,
+                message: 'Camera not found after create/find',
+                errorCode: 'CAMERA_NOT_FOUND',
+            });
+        }
+
+        const user = camera.username;
+        const pass = camera.password;
+        const camIp = camera.ip;
+        const camPort = camera.port || 554;
+
+        const rtspUrl = `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/ch01/0`;
+
+        // Start video stream (idempotent nếu đã chạy)
+        await streamService.startStreaming(cameraId, rtspUrl);
+
+        // Session: ưu tiên session đang mở, nếu chưa có thì tạo
+        let session = await sessionService.getActiveSessionForCamera(cameraId);
+        if (!session) {
+            session = await sessionService.createSessionForCamera(cameraId);
+            console.log(`>>> Created new session ${session.id} for camera ${cameraId}`);
+        } else {
+            console.log(`>>> Reuse active session ${session.id} for camera ${cameraId}`);
+        }
+
+        // Sensor job real-time
+        if (session && session.id) {
+            await sensorService.startSensorJobForCamera({
+                sessionId: session.id,
+                camera,
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: '>>> Stream connected',
+            cameraId,
+            rtspUrl,
+            wsUrl: `ws://localhost:${config.wsPort}`,
+            sensorWsUrl: `ws://localhost:${process.env.SENSOR_WS_PORT || 9998}`,
+            sessionId: session?.id || null,
+        });
+    } catch (err) {
+        console.error('>>> Connect stream by credentials error:', err);
+        return res.status(500).json({
+            success: false,
+            message: 'Connect stream failed',
+            error: err.message,
+        });
+    }
+};
+
 module.exports = {
     healthCheck,
     startStream,
     stopStream,
     stopAllStreams,
     getStreamingCameras,
+    connectStreamByCredentials,
 };

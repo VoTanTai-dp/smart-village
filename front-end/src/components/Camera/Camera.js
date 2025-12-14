@@ -109,20 +109,43 @@ const Camera = () => {
         return valid;
     };
 
+    // Helpers lưu trạng thái ẩn camera ở localStorage
+    const getHiddenCameraIds = () => {
+        try {
+            const raw = localStorage.getItem('hiddenCameras');
+            const arr = raw ? JSON.parse(raw) : [];
+            if (Array.isArray(arr)) return arr.map((x) => Number(x));
+            return [];
+        } catch {
+            return [];
+        }
+    };
+    const setHiddenCameraIds = (ids) => {
+        try {
+            localStorage.setItem('hiddenCameras', JSON.stringify(ids));
+        } catch {
+            // ignore
+        }
+    };
+
     const loadCameras = async () => {
         try {
             const list = await getCameras();
-            list.sort((a, b) => {
+            // Lọc các camera đã ẩn trong localStorage
+            const hidden = new Set(getHiddenCameraIds());
+            const filtered = list.filter((c) => !hidden.has(Number(c.id)));
+
+            filtered.sort((a, b) => {
                 const aa = (a.address || '').toLowerCase();
                 const bb = (b.address || '').toLowerCase();
                 if (aa < bb) return -1;
                 if (aa > bb) return 1;
                 return a.id - b.id;
             });
-            setCameras(list);
+            setCameras(filtered);
 
-            // Nếu không có camera nào trong database -> auto mở modal tạo kết nối
-            if (list.length === 0) {
+            // Nếu không có camera nào đang hiển thị (sau khi lọc) -> mở modal nhập thông tin kết nối
+            if (filtered.length === 0) {
                 setShowModal(true);
             }
         } catch (error) {
@@ -232,26 +255,25 @@ const Camera = () => {
         }
     };
 
-    // Disconnect: stop stream + xóa camera khỏi DB
+    // Disconnect: chỉ ngắt kết nối stream, KHÔNG xóa camera khỏi DB
     const handleDisconnectCamera = async (cameraId) => {
         try {
-            // nếu đang stream thì stop trước
+            // Nếu đang stream thì stop
             if (streamingCameraIds.includes(cameraId)) {
                 await stopSingleCameraStream(cameraId);
             }
 
-            // xóa khỏi database
-            await deleteCamera(cameraId);
+            // Cập nhật state streaming
+            setStreamingCameraIds((prev) => prev.filter((id) => id !== cameraId));
 
-            // cập nhật state streaming
-            setStreamingCameraIds((prev) =>
-                prev.filter((id) => id !== cameraId)
-            );
-
-            // cập nhật danh sách cameras
+            // Loại bỏ camera khỏi giao diện (KHÔNG xóa DB)
             setCameras((prev) => prev.filter((cam) => cam.id !== cameraId));
+            // Ghi nhận id camera đã ẩn vào localStorage để ẩn cả sau khi reload
+            const hidden = new Set(getHiddenCameraIds());
+            hidden.add(Number(cameraId));
+            setHiddenCameraIds(Array.from(hidden));
 
-            // clear canvas
+            // Clear canvas của camera
             const canvasEl = canvasRefs.current[cameraId];
             if (canvasEl) {
                 const ctx = canvasEl.getContext('2d');
@@ -261,12 +283,12 @@ const Camera = () => {
             }
             delete canvasRefs.current[cameraId];
 
-            // nếu đang fullscreen camera này thì đóng fullscreen
+            // Nếu đang fullscreen camera này thì đóng fullscreen
             if (fullscreenCameraIdRef.current === cameraId) {
                 handleCloseFullscreen();
             }
 
-            toast.success('Camera disconnected and removed');
+            toast.success('Camera disconnected');
         } catch (error) {
             console.error('handleDisconnectCamera error:', error);
             toast.error('Failed to disconnect camera');

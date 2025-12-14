@@ -24,6 +24,40 @@ const createCamera = async (payload) => {
     return camera;
 };
 
+// Tìm camera theo bộ (ip, username, password) đã mã hóa
+const findByCredentials = async ({ ip, username, password }) => {
+    if (!ip || !username || !password) return null;
+    // Tìm theo ip + username trước, sau đó giải mã password trong DB so sánh
+    const candidates = await db.Camera.findAll({
+        where: { ip, username },
+        order: [['id', 'ASC']],
+    });
+    for (const cam of candidates) {
+        try {
+            const raw = decryptPassword(cam.password);
+            if (raw === password) {
+                return cam;
+            }
+        } catch (e) {
+            // ignore and continue
+        }
+    }
+    return null;
+};
+
+// Tìm nếu có, nếu chưa có thì tạo (tránh trùng theo ip, username, password)
+const findOrCreateByCredentials = async (payload) => {
+    const { ip, username, password } = payload || {};
+    if (!ip || !username || !password) return null;
+
+    // Thử tìm trước
+    const existing = await findByCredentials({ ip, username, password });
+    if (existing) return existing;
+
+    // Chưa có thì tạo mới (mã hóa password ở createCamera)
+    return await createCamera(payload);
+};
+
 const getAllCameras = async ({ page, limit }) => {
     const offset = (page - 1) * limit;
     const { rows, count } = await db.Camera.findAndCountAll({
@@ -92,5 +126,7 @@ module.exports = {
     updateCamera,
     deleteCamera,
     deleteAllCameras,
-    getCameraCredentials
+    getCameraCredentials,
+    findByCredentials,
+    findOrCreateByCredentials,
 };
