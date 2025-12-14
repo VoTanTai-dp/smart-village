@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Profile.scss';
+import ChangePassword from './ChangePassword';
 import { toast } from 'react-toastify';
 import { getUserByEmail, getUserByLogin, updateUserInfo, changePassword } from '../../services/accountService';
 
@@ -10,6 +11,7 @@ const Profile = (props) => {
     // UI states
     const [isEditing, setIsEditing] = useState(false);
     const [showPwdModal, setShowPwdModal] = useState(false);
+    const [submittingPwd, setSubmittingPwd] = useState(false);
 
     // Form data mapped to giao diện của bạn
     const [fullName, setFullName] = useState(''); // map với username trong DB
@@ -22,11 +24,6 @@ const Profile = (props) => {
     const [joinedDate, setJoinedDate] = useState('');
     const [avatarUrl] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80%29');
     const [lastSeen] = useState(''); // nếu bạn có cơ chế lastSeen thì set vào đây
-
-    // Modal change password
-    const [oldPassword, setOldPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
     useEffect(() => {
         const init = async () => {
@@ -98,27 +95,27 @@ const Profile = (props) => {
         }
     };
 
-    const handleChangePassword = async () => {
+    const handleChangePassword = async (oldPwd, newPwd, confirmPwd) => {
         try {
             if (!user?.id) return;
-            if (!oldPassword || !newPassword) {
+            if (!oldPwd || !newPwd) {
                 toast.error('Please input old and new password');
                 return;
             }
-            if (newPassword !== confirmNewPassword) {
+            if (newPwd !== confirmPwd) {
                 toast.error('New password and confirm do not match');
                 return;
             }
-            await changePassword(user.id, oldPassword, newPassword);
+            setSubmittingPwd(true);
+            await changePassword(user.id, oldPwd, newPwd);
             toast.success('Password changed');
             setShowPwdModal(false);
-            setOldPassword('');
-            setNewPassword('');
-            setConfirmNewPassword('');
         } catch (e) {
             console.error('change password error: ', e);
             const msg = e?.response?.data?.message || 'Change password failed';
             toast.error(msg);
+        } finally {
+            setSubmittingPwd(false);
         }
     };
 
@@ -236,32 +233,12 @@ const Profile = (props) => {
                 </div >
             </div >
 
-            {/* Password Modal (giữ style của bạn) */}
-            {
-                showPwdModal && (
-                    <div className="modal-backdrop-custom" onClick={() => setShowPwdModal(false)}>
-                        <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-                            <h5 className="mb-3">Change Password</h5>
-                            <div className="mb-2">
-                                <label className="form-label">Old Password</label>
-                                <input type="password" className="form-control" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-                            </div>
-                            <div className="mb-2">
-                                <label className="form-label">New Password</label>
-                                <input type="password" className="form-control" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Confirm New Password</label>
-                                <input type="password" className="form-control" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-                            </div>
-                            <div className="d-flex gap-2">
-                                <button className="btn btn-secondary" onClick={() => setShowPwdModal(false)}>Cancel</button>
-                                <button className="btn btn-primary text-dark fw-bold" onClick={handleChangePassword}>Update Password</button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+            <ChangePassword
+                isOpen={showPwdModal}
+                onClose={() => setShowPwdModal(false)}
+                onSubmit={handleChangePassword}
+                submitting={submittingPwd}
+            />
         </div >
     );
 };
