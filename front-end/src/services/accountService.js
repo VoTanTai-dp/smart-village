@@ -18,4 +18,12 @@ const getUserByLogin = async (valueLogin) => {
   return axios.get(`${API_BASE}/users/by-login`, { params: { valueLogin } });
 };
 
-export { getUserByEmail, getUserByLogin, updateUserInfo, changePassword };
+const uploadAvatar = async (id, file) => {
+  const form = new FormData();
+  form.append('avatar', file);
+  return axios.post(`${API_BASE}/users/${id}/avatar`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export { getUserByEmail, getUserByLogin, updateUserInfo, changePassword, uploadAvatar };

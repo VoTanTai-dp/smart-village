@@ -127,7 +127,7 @@ const updateUserInfo = async (id, payload) => {
 };
 
 const getUserByEmail = async (email) => {
-    return db.User.findOne({ where: { email } });
+    return db.User.findOne({ where: { email }, include: [{ model: db.Group, attributes: ['description'] }] });
 };
 
 const changePassword = async (id, oldPassword, newPassword) => {
@@ -163,7 +163,8 @@ const getUserByLogin = async (valueLogin) => {
                 { email: valueLogin },
                 { phone: valueLogin }
             ]
-        }
+        },
+        include: [{ model: db.Group, attributes: ['description'] }]
     });
 };
 

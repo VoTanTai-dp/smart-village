@@ -213,5 +213,6 @@ router.get('/by-login', userController.getUserByLogin);
 router.get('/by-email', userController.getUserByEmail);
 router.put('/:id/info', userController.updateUserInfo);
 router.post('/:id/change-password', userController.changePassword);
+router.post('/:id/avatar', upload.single('avatar'), userController.updateAvatar);
 
 export default router;

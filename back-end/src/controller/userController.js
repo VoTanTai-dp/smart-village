@@ -236,6 +236,23 @@ const getUserByLogin = async (req, res) => {
     }
 };
 
+const updateAvatar = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Missing file', errorCode: 'MISSING_FILE' });
+        }
+        // Build public path based on viewEngine static: src/public
+        const relPath = `/uploads/${req.file.filename}`;
+        const user = await userService.updateUser(id, { avatar: relPath });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found', errorCode: 'USER_NOT_FOUND' });
+        return res.status(200).json({ success: true, message: 'Avatar updated', data: { avatar: relPath } });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ success: false, message: 'Internal server error', errorCode: e.code || 'INTERNAL_SERVER_ERROR' });
+    }
+};
+
 export default {
     createUser,
     getAllUsers,
@@ -247,5 +264,6 @@ export default {
     changePassword,
     deleteUser,
     deleteAllUsers,
-    handleLogin
+    handleLogin,
+    updateAvatar
 };

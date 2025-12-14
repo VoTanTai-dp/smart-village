@@ -20,9 +20,10 @@ const Profile = (props) => {
     const [sex, setSex] = useState('');
 
     // Giữ nguyên các trường hiển thị cho UI
-    const [role] = useState('Farm Operations Manager'); // không có trong DB, chỉ để hiển thị
+    const [groupDesc, setGroupDesc] = useState('');
     const [joinedDate, setJoinedDate] = useState('');
-    const [avatarUrl] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80%29');
+    const [avatarUrl, setAvatarUrl] = useState('');
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [lastSeen] = useState(''); // nếu bạn có cơ chế lastSeen thì set vào đây
 
     useEffect(() => {
@@ -61,10 +62,12 @@ const Profile = (props) => {
                 setEmail(data.email || '');
                 setPhone(data.phone || '');
                 setSex(data.sex || '');
+                setGroupDesc(data?.Group?.description || '');
                 if (data.createdAt) {
                     const d = new Date(data.createdAt);
                     setJoinedDate(d.toLocaleDateString());
                 }
+                setAvatarUrl(data?.avatar || '');
             } catch (e) {
                 console.error('init profile error:', e);
                 toast.error('Failed to load profile');
@@ -135,6 +138,8 @@ const Profile = (props) => {
         );
     }
 
+    const API_ORIGIN = 'http://localhost:8080';
+
     return (
         <div className="profile-container">
             <div className="container">
@@ -145,14 +150,38 @@ const Profile = (props) => {
                         {/* 1. Header Section: Avatar & Name */}
                         <div className="profile-header">
                             <div className="avatar-wrapper">
-                                <img src={avatarUrl} alt={fullName || 'User'} />
-                                <button className="btn-edit-avatar" title="Change Avatar">
-                                    <span className="material-symbols-outlined">edit</span>
-                                </button>
+                               <img src={`${API_ORIGIN}${avatarUrl || '/uploads/blank-avatar.jpg'}`} alt={fullName || 'User'} />
+                               <label className="btn-edit-avatar" title="Change Avatar">
+                                   <i className="bi bi-pen"></i>
+                                   <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                                       const file = e.target.files?.[0];
+                                       if (!file) return;
+                                       if (!user?.id) return;
+                                       try {
+                                           setUploadingAvatar(true);
+                                           const { uploadAvatar } = await import('../../services/accountService');
+                                           const res = await uploadAvatar(user.id, file);
+                                           const url = res?.data?.data?.avatar;
+                                           if (url) {
+                                               setAvatarUrl(url);
+                                               setUser(prev => ({ ...prev, avatar: url }));
+                                               toast.success('Avatar updated');
+                                           } else {
+                                               toast.error('Upload failed');
+                                           }
+                                       } catch (err) {
+                                           console.error('upload avatar error', err);
+                                           toast.error('Upload failed');
+                                       } finally {
+                                           setUploadingAvatar(false);
+                                           e.target.value = '';
+                                       }
+                                   }} />
+                               </label>
                             </div>
                             <div className="user-info-header">
                                 <h2>{fullName || '—'}</h2>
-                                <div className="role-badge">{role}</div>
+                                <div className="role-badge">{groupDesc || '—'}</div>
                                 {lastSeen && <div className="last-seen">Last seen {lastSeen}</div>}
                             </div>
                         </div>
@@ -189,10 +218,10 @@ const Profile = (props) => {
                                 )}
                             </div>
 
-                            {/* Role */}
+                            {/* Group */}
                             <div className="info-item col-12 col-md-6">
-                                <label>Role</label>
-                                <div className="info-value">{role}</div>
+                                <label>Group</label>
+                                <div className="info-value">{groupDesc || '—'}</div>
                             </div>
 
                             {/* Sex */}
