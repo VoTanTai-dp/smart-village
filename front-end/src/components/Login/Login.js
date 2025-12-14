@@ -39,7 +39,8 @@ const Login = (props) => {
                 toast.success(serverData.EM);
                 let data = {
                     isAuthenticated: true,
-                    token: 'fake token' // Bạn nên lấy token thật từ serverData nếu có
+                    token: 'fake token', // Bạn nên lấy token thật từ serverData nếu có
+                    email: valueLogin // Lưu email (hoặc giá trị đăng nhập) để hiển thị trên Nav
                 }
                 sessionStorage.setItem('account', JSON.stringify(data));
                 history.push('/');
