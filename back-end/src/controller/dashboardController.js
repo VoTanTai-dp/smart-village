@@ -38,45 +38,53 @@ const getSensorDashboard = async (req, res) => {
             if (session) {
                 const sessionId = session.id;
 
-                // Bản ghi Data mới nhất
-                const latestData = await db.Data.findOne({
-                    where: { sessionId },
-                    order: [['createdAt', 'DESC']],
-                });
+                // Chỉ load sensor data khi camera có đủ cả 2 entityId
+                const hasHA = !!(camera.haTemperatureEntityId && camera.haHumidityEntityId);
 
-                // Lịch sử N bản ghi gần nhất (vd 20)
-                const historyRows = await db.Data.findAll({
-                    where: { sessionId },
-                    order: [['createdAt', 'DESC']],
-                    limit: 20,
-                });
-
-                // Bản ghi Count mới nhất (nếu có model Count)
+                let latestData = null;
+                let historyRows = [];
                 let latestCount = null;
-                if (CountModel) {
-                    latestCount = await CountModel.findOne({
+
+                if (hasHA) {
+                    // Bản ghi Data mới nhất
+                    latestData = await db.Data.findOne({
                         where: { sessionId },
                         order: [['createdAt', 'DESC']],
                     });
+
+                    // Lịch sử N bản ghi gần nhất (vd 20)
+                    historyRows = await db.Data.findAll({
+                        where: { sessionId },
+                        order: [['createdAt', 'DESC']],
+                        limit: 20,
+                    });
+
+                    // Bản ghi Count mới nhất (nếu có model Count)
+                    if (CountModel) {
+                        latestCount = await CountModel.findOne({
+                            where: { sessionId },
+                            order: [['createdAt', 'DESC']],
+                        });
+                    }
                 }
 
                 const formatTimestamp = (row) =>
-                    row.atTime || row.createdAt?.toISOString?.() || row.createdAt || null;
+                    row?.atTime || row?.createdAt?.toISOString?.() || row?.createdAt || null;
 
                 if (latestData) {
                     latestRecord = {
-                        temperature: latestData.temperature,
-                        humidity: latestData.humidity,
+                        temperature: latestData.temperature ?? null,
+                        humidity: latestData.humidity ?? null,
                         people: latestCount ? latestCount.countPeople : null,
                         vehicle: latestCount ? latestCount.countVehicle : null,
                         timestamp: formatTimestamp(latestData),
                     };
                 }
 
-                history = historyRows.map((row) => ({
+                history = (historyRows || []).map((row) => ({
                     timestamp: formatTimestamp(row),
-                    temperature: row.temperature,
-                    humidity: row.humidity,
+                    temperature: row.temperature ?? null,
+                    humidity: row.humidity ?? null,
                     people: latestCount ? latestCount.countPeople : null,
                     vehicle: latestCount ? latestCount.countVehicle : null,
                 }));

@@ -128,12 +128,16 @@ const Camera = () => {
         }
     };
 
-    const loadCameras = async () => {
+    const loadCameras = async (activeIds = []) => {
         try {
             const list = await getCameras();
-            // Lọc các camera đã ẩn trong localStorage
             const hidden = new Set(getHiddenCameraIds());
-            const filtered = list.filter((c) => !hidden.has(Number(c.id)));
+            // Luôn hiển thị camera đang stream, ngay cả khi nằm trong hidden
+            const filtered = list.filter((c) => {
+                const id = Number(c.id);
+                if (activeIds.includes(id)) return true;
+                return !hidden.has(id);
+            });
 
             filtered.sort((a, b) => {
                 const aa = (a.address || '').toLowerCase();
@@ -144,7 +148,6 @@ const Camera = () => {
             });
             setCameras(filtered);
 
-            // Nếu không có camera nào đang hiển thị (sau khi lọc) -> mở modal nhập thông tin kết nối
             if (filtered.length === 0) {
                 setShowModal(true);
             }
@@ -248,6 +251,11 @@ const Camera = () => {
             setStreamingCameraIds((prev) =>
                 prev.includes(cameraId) ? prev : [...prev, cameraId]
             );
+            // Bỏ khỏi hidden để hiển thị trở lại nếu đã từng ẩn
+            const hidden = new Set(getHiddenCameraIds());
+            hidden.delete(Number(cameraId));
+            setHiddenCameraIds(Array.from(hidden));
+            await loadCameras([cameraId]);
             initStreamWebSocket();
         } catch (error) {
             console.error('startStreamForCamera error:', error);
@@ -360,19 +368,18 @@ const Camera = () => {
 
     useEffect(() => {
         const initPage = async () => {
-            await loadCameras();
-            initStreamWebSocket();
-
             try {
                 const activeIds = await getStreamingCameraIds();
-                if (Array.isArray(activeIds)) {
-                    setStreamingCameraIds(activeIds.map((id) => Number(id)));
-                } else {
-                    setStreamingCameraIds([]);
-                }
+                const activeNums = Array.isArray(activeIds)
+                    ? activeIds.map((id) => Number(id))
+                    : [];
+                setStreamingCameraIds(activeNums);
+                await loadCameras(activeNums);
             } catch (error) {
                 console.error('getStreamingCameraIds error:', error);
+                await loadCameras([]);
             }
+            initStreamWebSocket();
         };
 
         initPage();

@@ -192,7 +192,8 @@ const connectStreamByCredentials = async (req, res) => {
         }
 
         // Tìm nếu đã có camera với cùng ip/username/password; nếu chưa có thì tạo mới
-        const cameraRow = await cameraService.findOrCreateByCredentials({
+        const cameraRow = await cameraService.findOrCreateFullMatch({
+            userId: req.body.userId ?? null,
             ip,
             username,
             password,

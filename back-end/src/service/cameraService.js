@@ -1,5 +1,6 @@
 import db from '../models';
 import CryptoJS from 'crypto-js';
+const { Op } = require('sequelize');
 
 // KHÓA BÍ MẬT (Nên để trong file .env)
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -45,16 +46,46 @@ const findByCredentials = async ({ ip, username, password }) => {
     return null;
 };
 
-// Tìm nếu có, nếu chưa có thì tạo (tránh trùng theo ip, username, password)
-const findOrCreateByCredentials = async (payload) => {
-    const { ip, username, password } = payload || {};
+// So khớp đầy đủ các cột: userId, ip, username, password, port, address, haTemperatureEntityId, haHumidityEntityId
+// Nếu đã tồn tại -> chỉ cập nhật updatedAt (touch) và trả về; nếu chưa -> tạo mới
+const findOrCreateFullMatch = async (payload) => {
+    const {
+        userId = null,
+        ip,
+        username,
+        password,
+        port = null,
+        address = null,
+        haTemperatureEntityId = null,
+        haHumidityEntityId = null,
+    } = payload || {};
+
     if (!ip || !username || !password) return null;
 
-    // Thử tìm trước
-    const existing = await findByCredentials({ ip, username, password });
-    if (existing) return existing;
+    // Tìm theo các cột không phải password trước
+    const candidates = await db.Camera.findAll({
+        where: {
+            userId: userId ?? { [Op.is]: null },
+            ip,
+            username,
+            port: port ?? { [Op.is]: null },
+            address: address ?? { [Op.is]: null },
+            haTemperatureEntityId: haTemperatureEntityId ?? { [Op.is]: null },
+            haHumidityEntityId: haHumidityEntityId ?? { [Op.is]: null },
+        },
+        order: [['id', 'ASC']],
+    });
 
-    // Chưa có thì tạo mới (mã hóa password ở createCamera)
+    for (const cam of candidates) {
+        const raw = decryptPassword(cam.password);
+        if (raw === password) {
+            // Chỉ cập nhật updatedAt (touch)
+            await cam.update({ updatedAt: new Date() });
+            return cam;
+        }
+    }
+
+    // Không có camera trùng hoàn toàn -> tạo mới (mã hóa password ở createCamera)
     return await createCamera(payload);
 };
 
@@ -128,5 +159,5 @@ module.exports = {
     deleteAllCameras,
     getCameraCredentials,
     findByCredentials,
-    findOrCreateByCredentials,
+    findOrCreateFullMatch,
 };
