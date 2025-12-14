@@ -10,6 +10,7 @@ import PrivateRoutes from "./PrivateRoutes";
 import ModelAI from "../components/ModelAI/ModelAI";
 import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
+import NotFound from "../components/NotFound/NotFound";
 
 const AppRoutes = (props) => {
     return (
@@ -35,7 +36,7 @@ const AppRoutes = (props) => {
                 </Route>
 
                 <Route path="*">
-                    404 Not Found
+                    <NotFound />
                 </Route>
             </Switch>
         </>

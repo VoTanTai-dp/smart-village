@@ -13,11 +13,26 @@ const Nav = (props) => {
     const history = useHistory();
 
     useEffect(() => {
-        // Ẩn Nav ở trang login và register
-        if (location.pathname === '/login' || location.pathname === '/register') {
+        // Danh sách route hợp lệ sẽ hiển thị Nav
+        const allowed = [
+            '/',
+            '/login',
+            '/register',
+            '/camera',
+            '/dashboard',
+            '/modelai',
+            '/database',
+            '/profile',
+        ];
+        const path = location.pathname || '';
+        const show = allowed.some((p) => path === p || path.startsWith(p + '/'));
+        // Ẩn Nav khi truy cập đường dẫn không tồn tại (NotFound)
+        if (!show) {
             setIsShow(false);
         } else {
-            setIsShow(true);
+            // Riêng trang login/register cũng ẩn Nav
+            if (path === '/login' || path === '/register') setIsShow(false);
+            else setIsShow(true);
         }
 
         // 2. Kiểm tra session mỗi khi location thay đổi (để cập nhật ngay khi login/logout xong)
