@@ -121,7 +121,7 @@ const Nav = (props) => {
                         {/* Mobile Menu Toggle */}
                         <div className="d-md-none">
                             <button className="btn text-white p-0" onClick={toggleMobileMenu}>
-                                <span className="material-symbols-outlined fs-2">Menu</span>
+                                <i className="bi bi-list" style={{ fontSize: '1.5rem' }}></i>
                             </button>
                         </div>
                     </div>
