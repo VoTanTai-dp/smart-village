@@ -74,6 +74,10 @@ router.get('/', userController.getAllUsers);
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
+// Profile helpers MUST be before '/:id' route to avoid being captured as id
+router.get('/by-login', userController.getUserByLogin);
+router.get('/by-email', userController.getUserByEmail);
+
 router.get('/:id', userController.getUserById);
 
 /**
@@ -203,5 +207,11 @@ router.delete('/:id', userController.deleteUser);
 router.delete('/', userController.deleteAllUsers);
 
 router.post('/login', userController.handleLogin);
+
+// Profile helpers
+router.get('/by-login', userController.getUserByLogin);
+router.get('/by-email', userController.getUserByEmail);
+router.put('/:id/info', userController.updateUserInfo);
+router.post('/:id/change-password', userController.changePassword);
 
 export default router;

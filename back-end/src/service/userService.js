@@ -106,10 +106,39 @@ const getUserById = async (id) => {
 const updateUser = async (id, payload) => {
     const user = await db.User.findByPk(id);
     if (!user) return null;
-    let hashPass = hashUserPassword(payload.password);
-    payload.password = hashPass;
+    // Nếu có password thì hash, còn không thì bỏ qua
+    if (payload.password) {
+        let hashPass = hashUserPassword(payload.password);
+        payload.password = hashPass;
+    } else {
+        delete payload.password;
+    }
     await user.update(payload);
     return user;
+};
+
+// Cập nhật thông tin không đổi mật khẩu
+const updateUserInfo = async (id, payload) => {
+    const user = await db.User.findByPk(id);
+    if (!user) return null;
+    const { email, username, phone, sex } = payload;
+    await user.update({ email, username, phone, sex });
+    return user;
+};
+
+const getUserByEmail = async (email) => {
+    return db.User.findOne({ where: { email } });
+};
+
+const changePassword = async (id, oldPassword, newPassword) => {
+    const user = await db.User.findByPk(id);
+    if (!user) return { ok: false, reason: 'USER_NOT_FOUND' };
+    const ok = checkPassword(oldPassword, user.password);
+    if (!ok) return { ok: false, reason: 'INVALID_OLD_PASSWORD' };
+    const hash = hashUserPassword(newPassword);
+    user.password = hash;
+    await user.save();
+    return { ok: true };
 };
 
 const deleteUser = async (id) => {
@@ -126,6 +155,17 @@ const deleteAllUsers = async () => {
 const checkPassword = (inputPassword, hashPass) => {
     return bcrypt.compareSync(inputPassword, hashPass); //true or false
 }
+
+const getUserByLogin = async (valueLogin) => {
+    return db.User.findOne({
+        where: {
+            [Op.or]: [
+                { email: valueLogin },
+                { phone: valueLogin }
+            ]
+        }
+    });
+};
 
 const handleUserLogin = async (payload) => {
     try {
@@ -173,11 +213,12 @@ module.exports = {
     getAllUsers,
     getUserById,
     updateUser,
+    updateUserInfo,
+    getUserByEmail,
+    changePassword,
     deleteUser,
     deleteAllUsers,
     checkPassword,
-    handleUserLogin
-    // createNewUser,
-    // getUserList,
-    // updateUserInfor
+    handleUserLogin,
+    getUserByLogin
 };
