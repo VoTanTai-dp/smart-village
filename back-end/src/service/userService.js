@@ -1,4 +1,5 @@
 import db from '../models';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 import Bluebird from 'bluebird';
@@ -176,17 +177,36 @@ const handleUserLogin = async (payload) => {
                     { email: payload.valueLogin },
                     { phone: payload.valueLogin }
                 ]
-            }
+            },
+            include: [{ model: db.Group, attributes: ['id', 'groupname', 'description'] }]
         })
 
         if (user) {
             let isCorrectPassword = checkPassword(payload.password, user.password);
 
             if (isCorrectPassword === true) {
+                const secret = process.env.JWT_SECRET || 'smartvillage_secret';
+                const payloadJWT = {
+                    id: user.id,
+                    email: user.email,
+                    groupId: user.groupId,
+                };
+                const token = jwt.sign(payloadJWT, secret, { expiresIn: '7d' });
                 return {
                     EM: 'Login successfully',
                     EC: '0',
-                    DT: ''
+                    DT: {
+                        token,
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                            username: user.username,
+                            phone: user.phone,
+                            groupId: user.groupId,
+                            group: user.Group ? { id: user.Group.id, groupname: user.Group.groupname } : null,
+                            avatar: user.avatar,
+                        }
+                    }
                 }
             }
         }

@@ -7,7 +7,6 @@ import Register from "../components/Register/Register";
 import HomePage from '../components/HomePage/HomePage';
 import Camera from "../components/Camera/Camera";
 import PrivateRoutes from "./PrivateRoutes";
-import ModelAI from "../components/ModelAI/ModelAI";
 import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
 import NotFound from "../components/NotFound/NotFound";
@@ -21,11 +20,9 @@ const AppRoutes = (props) => {
 
                 <PrivateRoutes path='/dashboard' component={Dashboard} />
 
-                <PrivateRoutes path="/modelai" component={ModelAI} />
-
                 <PrivateRoutes path="/profile" component={Profile} />
 
-               <PrivateRoutes path="/database/:table?" component={Database} />
+                <PrivateRoutes path="/database/:table?" component={Database} />
 
                 <Route path="/login">
                     <Login />

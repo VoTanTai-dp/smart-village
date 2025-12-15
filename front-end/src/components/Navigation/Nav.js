@@ -8,6 +8,7 @@ const Nav = (props) => {
     // 1. Thêm state để kiểm tra trạng thái đăng nhập
     const [isLogin, setIsLogin] = useState(false);
     const [userEmail, setUserEmail] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const location = useLocation();
     const history = useHistory();
@@ -42,6 +43,10 @@ const Nav = (props) => {
             try {
                 const obj = JSON.parse(session);
                 setUserEmail(obj?.email || '');
+                const gId = obj?.groupId ?? obj?.group_id ?? obj?.group?.id;
+                const gName = obj?.group?.groupname ?? obj?.groupName;
+                const gidNum = Number(gId);
+                setIsAdmin(gidNum === 1 || (gName && String(gName).toLowerCase() === 'admin'));
             } catch {
                 setUserEmail('');
             }
@@ -93,8 +98,7 @@ const Nav = (props) => {
                             <div className="nav-links d-flex gap-4 align-items-center">
                                 <NavLink to="/camera" className="nav-item">Camera</NavLink>
                                 <NavLink to="/dashboard" className="nav-item">Dashboard</NavLink>
-                                <NavLink to="/modelai" className="nav-item">Model AI</NavLink>
-                                <NavLink to="/database" className="nav-item">Database</NavLink>
+                                {isAdmin && <NavLink to="/database" className="nav-item">Database</NavLink>}
                                 {isLogin && userEmail && (
                                     <NavLink to="/profile" className="nav-item">
                                         <span className="user-email ms-2 me-2 text-white-50 small">{userEmail}</span>
@@ -131,8 +135,10 @@ const Nav = (props) => {
                         <div className="mobile-menu d-md-none bg-dark p-3 border-top border-secondary">
                             <NavLink to="/camera" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Camera</NavLink>
                             <NavLink to="/dashboard" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</NavLink>
-                            <NavLink to="/modelai" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Model AI</NavLink>
-                            <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
+                            {/* <NavLink to="/modelai" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Model AI</NavLink> */}
+                            {isAdmin && (
+                                <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
+                            )}
                             <hr className="text-white" />
 
                             {/* 5. Render có điều kiện cho Mobile */}

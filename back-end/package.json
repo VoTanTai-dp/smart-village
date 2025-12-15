@@ -22,6 +22,7 @@
     "ejs": "3.1.6",
     "express": "4.17.2",
     "express-ws": "5.0.2",
+    "jsonwebtoken": "9.0.2",
     "multer": "2.0.2",
     "mysql2": "2.3.3",
     "node-rtsp-stream": "0.0.9",
