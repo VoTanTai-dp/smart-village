@@ -12,6 +12,7 @@ import cameraModelRouter from './api/cameraModel.js';
 import streamRoute from './api/stream.js';
 import dashboardRouter from './api/dashboard.js';
 import databaseRouter from './api/database.js';
+import haRouter from './api/ha.js';
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ const initApiRoutes = (app) => {
     router.use('/camera_model', cameraModelRouter);
     router.use('/dashboard', dashboardRouter);
     router.use('/database', databaseRouter);
+    router.use('/ha', haRouter);
 
     app.use('/api/v1', streamRoute);
     app.use('/api/v1', router);

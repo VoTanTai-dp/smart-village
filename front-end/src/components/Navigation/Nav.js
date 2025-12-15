@@ -21,6 +21,7 @@ const Nav = (props) => {
             '/register',
             '/camera',
             '/dashboard',
+            '/smartswitch',
             '/modelai',
             '/database',
             '/profile',
@@ -98,6 +99,7 @@ const Nav = (props) => {
                             <div className="nav-links d-flex gap-4 align-items-center">
                                 <NavLink to="/camera" className="nav-item">Camera</NavLink>
                                 <NavLink to="/dashboard" className="nav-item">Dashboard</NavLink>
+                                <NavLink to="/smartswitch" className="nav-item">SmartSwitch</NavLink>
                                 {isAdmin && <NavLink to="/database" className="nav-item">Database</NavLink>}
                                 {isLogin && userEmail && (
                                     <NavLink to="/profile" className="nav-item">
@@ -135,10 +137,11 @@ const Nav = (props) => {
                         <div className="mobile-menu d-md-none bg-dark p-3 border-top border-secondary">
                             <NavLink to="/camera" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Camera</NavLink>
                             <NavLink to="/dashboard" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</NavLink>
-                            {/* <NavLink to="/modelai" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Model AI</NavLink> */}
+                            <NavLink to="/smartswitch" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>SmartSwitch</NavLink>
                             {isAdmin && (
                                 <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
                             )}
+                            <NavLink to="/profile" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Profile</NavLink>
                             <hr className="text-white" />
 
                             {/* 5. Render có điều kiện cho Mobile */}

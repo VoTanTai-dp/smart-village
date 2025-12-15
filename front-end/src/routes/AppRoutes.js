@@ -20,6 +20,8 @@ const AppRoutes = (props) => {
 
                 <PrivateRoutes path='/dashboard' component={Dashboard} />
 
+                <PrivateRoutes path='/smartswitch' component={require('../components/SmartSwitch/SmartSwitch').default} />
+
                 <PrivateRoutes path="/profile" component={Profile} />
 
                 <PrivateRoutes path="/database/:table?" component={Database} />
