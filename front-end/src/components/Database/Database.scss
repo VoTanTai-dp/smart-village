@@ -1,0 +1,191 @@
+@import '../../styles/variables';
+
+.database-container {
+  background-color: $bg-dark;
+  min-height: calc(100vh - 64px);
+  color: $text-white;
+
+  .tables-card, .content-card {
+    background-color: $surface-dark;
+    border: 1px solid $border-color;
+    border-radius: 0.75rem;
+  }
+
+  .table-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: $text-white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    margin-bottom: 0.25rem;
+
+    &.active, &:hover {
+      color: $primary-color;
+      background-color: rgba(19, 200, 236, 0.08);
+    }
+  }
+
+  .custom-table {
+    color: $text-white;
+
+    .avatar-thumb {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 1px solid $border-color;
+      background-color: $bg-dark;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: $bg-dark;
+      color: $text-muted-dark;
+      border: none;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid $bg-dark;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+
+      td, th {
+        color: $text-white;
+        border-color: $bg-dark;
+      }
+    }
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $primary-color;
+    box-shadow: 0 0 8px rgba(19, 200, 236, 0.8);
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .action-buttons {
+    gap: .5rem;
+    .btn { min-width: 36px; }
+  }
+
+  /* Modal styles cloned from ChangePassword */
+  .modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    z-index: 1050;
+  }
+
+  .modal-card {
+    background: linear-gradient(180deg, rgba(26,44,48,0.98), rgba(16,31,34,0.98));
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    width: min(720px, 100%);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+
+  .animate-in {
+    animation: modalIn .18s ease-out both;
+  }
+
+  @keyframes modalIn {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header-custom {
+    padding: 14px 18px;
+    border-bottom: 1px solid $border-color;
+    background: rgba(255,255,255,0.02);
+
+    .badge-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(19,200,236,0.08);
+      color: $primary-color;
+      border: 1px solid rgba(19,200,236,0.15);
+    }
+
+    .page-title {
+      color: $text-white;
+      letter-spacing: 0.2px;
+      font-weight: 600;
+    }
+  }
+
+  .modal-body-custom {
+    padding: 18px;
+
+    .form-label {
+      color: $text-white-80;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-control-plaintext {
+      background: $input-bg;
+      border: 1px solid $input-border;
+      color: $text-white;
+    }
+
+    .form-control::placeholder { color: $text-white-60; }
+
+    .form-control:focus {
+      border-color: rgba(19,200,236,0.5);
+      box-shadow: 0 0 0 2px rgba(19,200,236,0.15);
+    }
+
+    /* Ẩn helper dưới input, dùng viền đỏ + toast thay thế */
+    .invalid-feedback { display: none !important; }
+  }
+
+  .toast-rovodev {
+    .toast-body {
+      background-color: $surface-dark;
+      color: $text-white;
+      border: 1px solid $border-color;
+      border-radius: .5rem;
+      padding: .5rem .75rem;
+      &.success {}
+    }
+    &.success .toast-body { border-color: #28a745; }
+    &.danger .toast-body { border-color: #dc3545; }
+    &.warning .toast-body { border-color: #ffc107; }
+  }
+
+  .pagination .page-item {
+    .page-link {
+      background-color: $bg-dark;
+      color: $text-white;
+      border-color: $border-color;
+    }
+
+    &.active .page-link {
+      background-color: $primary-color;
+      color: #000;
+      border-color: $primary-color;
+    }
+  }
+}

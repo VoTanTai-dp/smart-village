@@ -11,6 +11,7 @@ import ModelAI from "../components/ModelAI/ModelAI";
 import Dashboard from "../components/Dashboard/Dashboard";
 import Profile from "../components/Profile/Profile";
 import NotFound from "../components/NotFound/NotFound";
+import Database from "../components/Database/Database";
 
 const AppRoutes = (props) => {
     return (
@@ -23,6 +24,8 @@ const AppRoutes = (props) => {
                 <PrivateRoutes path="/modelai" component={ModelAI} />
 
                 <PrivateRoutes path="/profile" component={Profile} />
+
+               <PrivateRoutes path="/database/:table?" component={Database} />
 
                 <Route path="/login">
                     <Login />
