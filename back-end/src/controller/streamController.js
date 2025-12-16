@@ -68,6 +68,18 @@ const startStream = async (req, res) => {
                 sessionId: session.id,
                 camera,
             });
+            // Counter job real-time
+            try {
+                const counterService = require('../service/counterService');
+                const cameraService = require('../service/cameraService');
+                const creds = await cameraService.getCameraCredentials(camera.id);
+                await counterService.startCounterJobForCamera({
+                    sessionId: session.id,
+                    camera: creds || camera,
+                });
+            } catch (e) {
+                console.error('>>> Start counter job error:', e);
+            }
         }
 
         return res.json({
@@ -100,6 +112,12 @@ const stopStream = async (req, res) => {
             const ended =
                 await sessionService.endSessionById(activeSession.id);
             sensorService.stopSensorJobBySessionId(activeSession.id);
+            try {
+                const counterService = require('../service/counterService');
+                counterService.stopCounterJobBySessionId(activeSession.id);
+            } catch (e) {
+                console.error('>>> Stop counter job error:', e.message);
+            }
 
             console.log(
                 `>>> End session ${ended.id} for camera ${cameraId} at ${ended.endDate}`
@@ -245,6 +263,18 @@ const connectStreamByCredentials = async (req, res) => {
                 sessionId: session.id,
                 camera,
             });
+            // Counter job real-time as well for credential-connect path
+            try {
+                const counterService = require('../service/counterService');
+                const cameraService = require('../service/cameraService');
+                const creds = await cameraService.getCameraCredentials(camera.id);
+                await counterService.startCounterJobForCamera({
+                    sessionId: session.id,
+                    camera: creds || camera,
+                });
+            } catch (e) {
+                console.error('>>> Start counter job (connect path) error:', e);
+            }
         }
 
         return res.json({

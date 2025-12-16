@@ -197,9 +197,27 @@ const stopAllSensorJobs = () => {
     activeJobs.clear();
 };
 
+// Generic broadcaster so other services (e.g., counter) can send messages on the same WS
+const broadcastGeneric = (payload) => {
+    if (!wss) return;
+    const msg = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(msg);
+        }
+    });
+};
+
+const getClientCount = () => {
+    if (!wss) return 0;
+    return Array.from(wss.clients || []).filter(c => c && c.readyState === WebSocket.OPEN).length;
+};
+
 module.exports = {
     initSensorWebSocketServer,
     startSensorJobForCamera,
     stopSensorJobBySessionId,
     stopAllSensorJobs,
+    broadcastGeneric,
+    getClientCount,
 };

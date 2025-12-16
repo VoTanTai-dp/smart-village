@@ -3,7 +3,7 @@ import './Dashboard.scss';
 import { getSensorDashboard } from '../../services/dashboardService';
 import { toast } from 'react-toastify';
 
-const SENSOR_WS_URL = 'ws://localhost:9998';
+const SENSOR_WS_URL = process.env.REACT_APP_SENSOR_WS_URL || 'ws://localhost:9998';
 
 // Gom camera theo address (khu vực)
 const groupCamerasByAddress = (cameraList) => {
@@ -69,87 +69,125 @@ const Dashboard = () => {
             ws.onmessage = (event) => {
                 try {
                     const msg = JSON.parse(event.data);
-                    if (msg.type !== 'sensor') return;
 
-                    const {
-                        cameraId,
-                        sessionId,
-                        temperature,
-                        humidity,
-                        atTime,
-                    } = msg;
+                    // SENSOR real-time
+                    if (msg.type === 'sensor') {
+                        const {
+                            cameraId,
+                            sessionId,
+                            temperature,
+                            humidity,
+                            atTime,
+                        } = msg;
 
-                    setCamerasData((prev) => {
-                        const list = [...prev];
-                        const idx = list.findIndex(
-                            (c) => c.cameraId === cameraId
-                        );
-                        if (idx === -1) {
-                            // camera chưa có trong dashboard -> thêm mới tối thiểu để hiển thị
-                            const timestamp = atTime || null;
-                            const newCam = {
-                                cameraId,
-                                ip: null,
-                                port: null,
-                                address: 'Unknown Area',
-                                latestRecord: {
-                                    temperature,
-                                    humidity,
-                                    people: null,
-                                    vehicle: null,
-                                    timestamp,
-                                },
-                                history: [
-                                    {
-                                        timestamp,
+                        setCamerasData((prev) => {
+                            const list = [...prev];
+                            const idx = list.findIndex((c) => c.cameraId === cameraId);
+                            if (idx === -1) {
+                                const timestamp = atTime || null;
+                                const newCam = {
+                                    cameraId,
+                                    ip: null,
+                                    port: null,
+                                    address: 'Unknown Area',
+                                    latestRecord: {
                                         temperature,
                                         humidity,
                                         people: null,
                                         vehicle: null,
-                                        sessionId,
+                                        timestamp,
                                     },
-                                ],
+                                    history: [
+                                        {
+                                            timestamp,
+                                            temperature,
+                                            humidity,
+                                            people: null,
+                                            vehicle: null,
+                                            sessionId,
+                                        },
+                                    ],
+                                };
+                                return [...prev, newCam];
+                            }
+
+                            const cam = { ...list[idx] };
+                            const latest = cam.latestRecord || {};
+                            const timestamp = atTime || latest.timestamp || null;
+
+                            cam.latestRecord = {
+                                ...latest,
+                                temperature,
+                                humidity,
+                                timestamp,
                             };
-                            return [...prev, newCam];
-                        }
 
-                        const cam = { ...list[idx] };
-                        const latest = cam.latestRecord || {};
+                            const newRow = {
+                                timestamp,
+                                temperature,
+                                humidity,
+                                people: latest.people !== undefined ? latest.people : null,
+                                vehicle: latest.vehicle !== undefined ? latest.vehicle : null,
+                                sessionId,
+                            };
+                            cam.history = [newRow, ...(cam.history || [])];
+                            list[idx] = cam;
+                            return list;
+                        });
+                        return;
+                    }
 
-                        const timestamp = atTime || latest.timestamp || null;
+                    // COUNTER real-time (people/vehicle)
+                    if (msg.type === 'count') {
+                        const { cameraId, people, vehicle, atTime } = msg;
+                        if (!cameraId) return;
+                        setCamerasData((prev) => {
+                            const list = [...prev];
+                            const idx = list.findIndex((c) => c.cameraId === cameraId);
+                            if (idx === -1) {
+                                // Chưa có camera -> tạo record tối thiểu với chỉ people/vehicle
+                                const timestamp = atTime || null;
+                                const newCam = {
+                                    cameraId,
+                                    ip: null,
+                                    port: null,
+                                    address: 'Unknown Area',
+                                    latestRecord: {
+                                        temperature: null,
+                                        humidity: null,
+                                        people: people ?? null,
+                                        vehicle: vehicle ?? null,
+                                        timestamp,
+                                    },
+                                    history: [
+                                        {
+                                            timestamp,
+                                            temperature: null,
+                                            humidity: null,
+                                            people: people ?? null,
+                                            vehicle: vehicle ?? null,
+                                        },
+                                    ],
+                                };
+                                return [...prev, newCam];
+                            }
 
-                        // cập nhật latest
-                        cam.latestRecord = {
-                            ...latest,
-                            temperature,
-                            humidity,
-                            timestamp,
-                        };
-
-                        // thêm 1 dòng history mới ở đầu
-                        const newRow = {
-                            timestamp,
-                            temperature,
-                            humidity,
-                            // people/vehicle giữ theo latest cũ (nếu có)
-                            people:
-                                latest.people !== undefined
-                                    ? latest.people
-                                    : null,
-                            vehicle:
-                                latest.vehicle !== undefined
-                                    ? latest.vehicle
-                                    : null,
-                            sessionId,
-                        };
-
-                        cam.history = [newRow, ...(cam.history || [])];
-
-                        list[idx] = cam;
-                        return list;
-                    });
+                            const cam = { ...list[idx] };
+                            const latest = cam.latestRecord || {};
+                            const timestamp = atTime || latest.timestamp || null;
+                            cam.latestRecord = {
+                                ...latest,
+                                people: people ?? latest.people ?? null,
+                                vehicle: vehicle ?? latest.vehicle ?? null,
+                                timestamp,
+                            };
+                            list[idx] = cam;
+                            return list;
+                        });
+                        return;
+                    }
                 } catch (e) {
-                    console.error('Parse sensor message error:', e);
+                    console.error('Parse WebSocket message error:', e);
                 }
             };
         };
