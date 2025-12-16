@@ -85,8 +85,32 @@ const Dashboard = () => {
                             (c) => c.cameraId === cameraId
                         );
                         if (idx === -1) {
-                            // camera chưa có trong dashboard -> bỏ qua
-                            return prev;
+                            // camera chưa có trong dashboard -> thêm mới tối thiểu để hiển thị
+                            const timestamp = atTime || null;
+                            const newCam = {
+                                cameraId,
+                                ip: null,
+                                port: null,
+                                address: 'Unknown Area',
+                                latestRecord: {
+                                    temperature,
+                                    humidity,
+                                    people: null,
+                                    vehicle: null,
+                                    timestamp,
+                                },
+                                history: [
+                                    {
+                                        timestamp,
+                                        temperature,
+                                        humidity,
+                                        people: null,
+                                        vehicle: null,
+                                        sessionId,
+                                    },
+                                ],
+                            };
+                            return [...prev, newCam];
                         }
 
                         const cam = { ...list[idx] };

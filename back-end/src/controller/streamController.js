@@ -36,14 +36,16 @@ const startStream = async (req, res) => {
             });
         }
 
-        const rtspUrl = `rtsp://${username}:${encodeURIComponent(
-            password
-        )}@${ip}:${port}/ch01/0`;
+        const candidateUrls = [
+            `rtsp://${username}:${encodeURIComponent(password)}@${ip}:${port}/ch01/0`,
+            `rtsp://${username}:${encodeURIComponent(password)}@${ip}:${port}/cam/realmonitor?channel=1&subtype=0`,
+        ];
 
-        console.log(`>>> Received RTSP URL (Camera ${cameraId}): ${rtspUrl}`);
+        console.log(`>>> Received candidate RTSP URLs (Camera ${cameraId}):`, candidateUrls);
 
-        // Start video stream
-        await streamService.startStreaming(cameraId, rtspUrl);
+        // Start video stream: thử lần lượt 2 format
+        const startResult = await streamService.startStreaming(cameraId, candidateUrls);
+        const rtspUrl = startResult?.url || candidateUrls[0];
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo mới
         let session =
@@ -219,10 +221,14 @@ const connectStreamByCredentials = async (req, res) => {
         const camIp = camera.ip;
         const camPort = camera.port || 554;
 
-        const rtspUrl = `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/ch01/0`;
+        const candidateUrls = [
+            `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/ch01/0`,
+            `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/cam/realmonitor?channel=1&subtype=0`,
+        ];
 
-        // Start video stream (idempotent nếu đã chạy)
-        await streamService.startStreaming(cameraId, rtspUrl);
+        // Start video stream (idempotent nếu đã chạy) - thử lần lượt 2 format
+        const startResult = await streamService.startStreaming(cameraId, candidateUrls);
+        const rtspUrl = startResult?.url || candidateUrls[0];
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo
         let session = await sessionService.getActiveSessionForCamera(cameraId);
