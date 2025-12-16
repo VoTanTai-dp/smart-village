@@ -40,9 +40,12 @@ const Camera = () => {
     const [inputHaHumEntityId, setInputHaHumEntityId] = useState('');
 
     const [cameras, setCameras] = useState([]);
+    const camerasRef = useRef([]);
 
     // Danh sách camera đang stream (multi-camera)
     const [streamingCameraIds, setStreamingCameraIds] = useState([]);
+    const streamingIdsRef = useRef([]);
+    const discoveredIdsRef = useRef(new Set());
 
     const defaultObjValidInput = {
         isValidIP: true,
@@ -147,6 +150,7 @@ const Camera = () => {
                 return a.id - b.id;
             });
             setCameras(filtered);
+            camerasRef.current = filtered;
 
             if (filtered.length === 0) {
                 setShowModal(true);
@@ -187,6 +191,20 @@ const Camera = () => {
                 // Ép cameraId về number để đồng bộ với camera.id & fullscreenCameraIdRef
                 const camId = Number(message.cameraId);
                 const { data } = message;
+
+                // Nếu lần đầu thấy camId này trong stream, cập nhật state ngay để hiển thị
+                if (!streamingIdsRef.current.includes(camId)) {
+                    streamingIdsRef.current = [...streamingIdsRef.current, camId];
+                    setStreamingCameraIds((prev) => (prev.includes(camId) ? prev : [...prev, camId]));
+                }
+
+                // Đảm bảo camera xuất hiện trong danh sách nếu đang bị ẩn hoặc chưa load
+                const existsInList = Array.isArray(camerasRef.current) && camerasRef.current.some(c => Number(c.id) === camId);
+                if (!existsInList && !discoveredIdsRef.current.has(camId)) {
+                    discoveredIdsRef.current.add(camId);
+                    // Gọi loadCameras với camId để ép camera này hiển thị ngay
+                    loadCameras([camId]);
+                }
 
                 // Canvas ô tile
                 const canvasEl = canvasRefs.current[camId];
@@ -251,6 +269,7 @@ const Camera = () => {
             setStreamingCameraIds((prev) =>
                 prev.includes(cameraId) ? prev : [...prev, cameraId]
             );
+            streamingIdsRef.current = [...new Set([...streamingIdsRef.current, cameraId])];
             // Bỏ khỏi hidden để hiển thị trở lại nếu đã từng ẩn
             const hidden = new Set(getHiddenCameraIds());
             hidden.delete(Number(cameraId));

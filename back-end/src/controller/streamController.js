@@ -36,14 +36,14 @@ const startStream = async (req, res) => {
             });
         }
 
-        const rtspUrl = `rtsp://${username}:${encodeURIComponent(
-            password
-        )}@${ip}:${port}/ch01/0`;
-
-        console.log(`>>> Received RTSP URL (Camera ${cameraId}): ${rtspUrl}`);
-
-        // Start video stream
-        await streamService.startStreaming(cameraId, rtspUrl);
+        // Start video stream with RTSP fallback patterns
+        const { rtspUrl } = await streamService.startStreamingWithFallback(cameraId, {
+            username,
+            password,
+            ip,
+            port,
+        });
+        console.log(`>>> Selected RTSP URL (Camera ${cameraId}): ${rtspUrl}`);
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo mới
         let session =
@@ -219,10 +219,13 @@ const connectStreamByCredentials = async (req, res) => {
         const camIp = camera.ip;
         const camPort = camera.port || 554;
 
-        const rtspUrl = `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/ch01/0`;
-
-        // Start video stream (idempotent nếu đã chạy)
-        await streamService.startStreaming(cameraId, rtspUrl);
+        // Start video stream with RTSP fallback patterns (idempotent nếu đã chạy)
+        const { rtspUrl } = await streamService.startStreamingWithFallback(cameraId, {
+            username: user,
+            password: pass,
+            ip: camIp,
+            port: camPort,
+        });
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo
         let session = await sessionService.getActiveSessionForCamera(cameraId);
