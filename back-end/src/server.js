@@ -13,6 +13,7 @@ import initApiRoutes from './routes/api';
 import expressWs from 'express-ws';
 import streamService from './service/streamService';
 import sensorService from './service/sensorService';
+import counterService from './service/counterService';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -41,6 +42,9 @@ streamService.initWebSocketServer();
 
 //init sensor web socket
 sensorService.initSensorWebSocketServer();
+
+//init counter web socket
+counterService.initCounterWebSocketServer();
 
 //connect to database
 // connection();

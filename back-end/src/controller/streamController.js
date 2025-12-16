@@ -2,6 +2,7 @@ import streamService from '../service/streamService';
 import cameraService from '../service/cameraService.js';
 import sessionService from '../service/sessionService.js';
 import sensorService from '../service/sensorService.js';
+import counterService from '../service/counterService.js';
 import config from '../config/stream.config';
 
 const healthCheck = async (req, res) => {
@@ -36,6 +37,7 @@ const startStream = async (req, res) => {
             });
         }
 
+<<<<<<< HEAD
         const candidateUrls = [
             `rtsp://${username}:${encodeURIComponent(password)}@${ip}:${port}/ch01/0`,
             `rtsp://${username}:${encodeURIComponent(password)}@${ip}:${port}/cam/realmonitor?channel=1&subtype=0`,
@@ -46,6 +48,16 @@ const startStream = async (req, res) => {
         // Start video stream: thử lần lượt 2 format
         const startResult = await streamService.startStreaming(cameraId, candidateUrls);
         const rtspUrl = startResult?.url || candidateUrls[0];
+=======
+        // Start video stream with RTSP fallback patterns
+        const { rtspUrl } = await streamService.startStreamingWithFallback(cameraId, {
+            username,
+            password,
+            ip,
+            port,
+        });
+        console.log(`>>> Selected RTSP URL (Camera ${cameraId}): ${rtspUrl}`);
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo mới
         let session =
@@ -88,6 +100,7 @@ const startStream = async (req, res) => {
             rtspUrl,
             wsUrl: `ws://localhost:${config.wsPort}`, // video WS
             sensorWsUrl: `ws://localhost:${process.env.SENSOR_WS_PORT || 9998}`, // sensor WS
+            counterWsUrl: `ws://localhost:${process.env.COUNTER_WS_PORT || 9997}`, // counter WS
             sessionId: session?.id || null,
         });
     } catch (err) {
@@ -112,12 +125,16 @@ const stopStream = async (req, res) => {
             const ended =
                 await sessionService.endSessionById(activeSession.id);
             sensorService.stopSensorJobBySessionId(activeSession.id);
+<<<<<<< HEAD
             try {
                 const counterService = require('../service/counterService');
                 counterService.stopCounterJobBySessionId(activeSession.id);
             } catch (e) {
                 console.error('>>> Stop counter job error:', e.message);
             }
+=======
+            counterService.stopCountingBySessionId(activeSession.id);
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
 
             console.log(
                 `>>> End session ${ended.id} for camera ${cameraId} at ${ended.endDate}`
@@ -156,6 +173,9 @@ const stopAllStreams = async (req, res) => {
                             activeSession.id
                         );
                     sensorService.stopSensorJobBySessionId(
+                        activeSession.id
+                    );
+                    counterService.stopCountingBySessionId(
                         activeSession.id
                     );
                     console.log(
@@ -239,6 +259,7 @@ const connectStreamByCredentials = async (req, res) => {
         const camIp = camera.ip;
         const camPort = camera.port || 554;
 
+<<<<<<< HEAD
         const candidateUrls = [
             `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/ch01/0`,
             `rtsp://${user}:${encodeURIComponent(pass)}@${camIp}:${camPort}/cam/realmonitor?channel=1&subtype=0`,
@@ -247,6 +268,15 @@ const connectStreamByCredentials = async (req, res) => {
         // Start video stream (idempotent nếu đã chạy) - thử lần lượt 2 format
         const startResult = await streamService.startStreaming(cameraId, candidateUrls);
         const rtspUrl = startResult?.url || candidateUrls[0];
+=======
+        // Start video stream with RTSP fallback patterns (idempotent nếu đã chạy)
+        const { rtspUrl } = await streamService.startStreamingWithFallback(cameraId, {
+            username: user,
+            password: pass,
+            ip: camIp,
+            port: camPort,
+        });
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
 
         // Session: ưu tiên session đang mở, nếu chưa có thì tạo
         let session = await sessionService.getActiveSessionForCamera(cameraId);
@@ -257,12 +287,13 @@ const connectStreamByCredentials = async (req, res) => {
             console.log(`>>> Reuse active session ${session.id} for camera ${cameraId}`);
         }
 
-        // Sensor job real-time
+        // Sensor job real-time and Counter job
         if (session && session.id) {
             await sensorService.startSensorJobForCamera({
                 sessionId: session.id,
                 camera,
             });
+<<<<<<< HEAD
             // Counter job real-time as well for credential-connect path
             try {
                 const counterService = require('../service/counterService');
@@ -275,6 +306,9 @@ const connectStreamByCredentials = async (req, res) => {
             } catch (e) {
                 console.error('>>> Start counter job (connect path) error:', e);
             }
+=======
+            await counterService.startCountingForCamera({ sessionId: session.id, camera });
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
         }
 
         return res.json({
@@ -284,6 +318,7 @@ const connectStreamByCredentials = async (req, res) => {
             rtspUrl,
             wsUrl: `ws://localhost:${config.wsPort}`,
             sensorWsUrl: `ws://localhost:${process.env.SENSOR_WS_PORT || 9998}`,
+            counterWsUrl: `ws://localhost:${process.env.COUNTER_WS_PORT || 9997}`,
             sessionId: session?.id || null,
         });
     } catch (err) {

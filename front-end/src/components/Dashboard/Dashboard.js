@@ -3,7 +3,12 @@ import './Dashboard.scss';
 import { getSensorDashboard } from '../../services/dashboardService';
 import { toast } from 'react-toastify';
 
+<<<<<<< HEAD
 const SENSOR_WS_URL = process.env.REACT_APP_SENSOR_WS_URL || 'ws://localhost:9998';
+=======
+const SENSOR_WS_URL = 'ws://localhost:9998';
+const COUNTER_WS_URL = 'ws://localhost:9997';
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
 
 // Gom camera theo address (khu vực)
 const groupCamerasByAddress = (cameraList) => {
@@ -47,39 +52,68 @@ const Dashboard = () => {
     useEffect(() => {
         loadDashboardData();
 
-        let ws = null;
+        let sensorWs = null;
+        let counterWs = null;
 
         const initSensorWs = () => {
-            ws = new WebSocket(SENSOR_WS_URL);
+            sensorWs = new WebSocket(SENSOR_WS_URL);
 
-            ws.onopen = () => {
+            sensorWs.onopen = () => {
                 console.log(`Connected to sensor WebSocket: ${SENSOR_WS_URL}`);
             };
 
-            ws.onerror = (err) => {
+            sensorWs.onerror = (err) => {
                 console.error('Sensor WebSocket error:', err);
                 toast.error('Sensor WebSocket error');
             };
 
-            ws.onclose = () => {
+            sensorWs.onclose = () => {
                 console.log('Sensor WebSocket closed');
-                ws = null;
+                sensorWs = null;
             };
 
-            ws.onmessage = (event) => {
+            sensorWs.onmessage = (event) => {
                 try {
                     const msg = JSON.parse(event.data);
 
+<<<<<<< HEAD
                     // SENSOR real-time
                     if (msg.type === 'sensor') {
                         const {
                             cameraId,
+=======
+                    const { cameraId, sessionId, temperature, humidity, atTime } = msg;
+
+                    setCamerasData((prev) => {
+                        const list = [...prev];
+                        const idx = list.findIndex((c) => c.cameraId === cameraId);
+                        if (idx === -1) return prev;
+
+                        const cam = { ...list[idx] };
+                        const latest = cam.latestRecord || {};
+                        const timestamp = atTime || latest.timestamp || null;
+
+                        cam.latestRecord = {
+                            ...latest,
+                            temperature,
+                            humidity,
+                            timestamp,
+                        };
+
+                        const newRow = {
+                            timestamp,
+                            temperature,
+                            humidity,
+                            people: latest.people ?? null,
+                            vehicle: latest.vehicle ?? null,
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
                             sessionId,
                             temperature,
                             humidity,
                             atTime,
                         } = msg;
 
+<<<<<<< HEAD
                         setCamerasData((prev) => {
                             const list = [...prev];
                             const idx = list.findIndex((c) => c.cameraId === cameraId);
@@ -186,18 +220,83 @@ const Dashboard = () => {
                         });
                         return;
                     }
+=======
+                        cam.history = [newRow, ...(cam.history || [])];
+                        list[idx] = cam;
+                        return list;
+                    });
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
                 } catch (e) {
                     console.error('Parse WebSocket message error:', e);
                 }
             };
         };
 
+        const initCounterWs = () => {
+            counterWs = new WebSocket(COUNTER_WS_URL);
+
+            counterWs.onopen = () => {
+                console.log(`Connected to counter WebSocket: ${COUNTER_WS_URL}`);
+            };
+
+            counterWs.onerror = (err) => {
+                console.error('Counter WebSocket error:', err);
+                toast.error('Counter WebSocket error');
+            };
+
+            counterWs.onclose = () => {
+                console.log('Counter WebSocket closed');
+                counterWs = null;
+            };
+
+            counterWs.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type !== 'count') return;
+
+                    const { cameraId, sessionId, human, vehicle, atTime } = msg;
+
+                    setCamerasData((prev) => {
+                        const list = [...prev];
+                        const idx = list.findIndex((c) => c.cameraId === cameraId);
+                        if (idx === -1) return prev;
+
+                        const cam = { ...list[idx] };
+                        const latest = cam.latestRecord || {};
+                        const timestamp = atTime || latest.timestamp || null;
+
+                        cam.latestRecord = {
+                            ...latest,
+                            people: human,
+                            vehicle: vehicle,
+                            timestamp,
+                        };
+
+                        const newRow = {
+                            timestamp,
+                            temperature: latest.temperature ?? null,
+                            humidity: latest.humidity ?? null,
+                            people: human,
+                            vehicle: vehicle,
+                            sessionId,
+                        };
+
+                        cam.history = [newRow, ...(cam.history || [])];
+                        list[idx] = cam;
+                        return list;
+                    });
+                } catch (e) {
+                    console.error('Parse counter message error:', e);
+                }
+            };
+        };
+
         initSensorWs();
+        initCounterWs();
 
         return () => {
-            if (ws) {
-                ws.close();
-            }
+            if (sensorWs) sensorWs.close();
+            if (counterWs) counterWs.close();
         };
     }, []);
 

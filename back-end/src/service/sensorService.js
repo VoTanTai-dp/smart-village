@@ -6,9 +6,7 @@ import db from '../models';
 
 const HA_HOST = process.env.HA_HOST || 'http://localhost:8123';
 const HA_TOKEN = process.env.HA_TOKEN;
-const HA_DEVICE_TEMP = process.env.HA_DEVICE_TEMP || null;
-const HA_DEVICE_HUM = process.env.HA_DEVICE_HUM || null;
-// Cho phép fallback .env khi camera thiếu entity
+// Không dùng mặc định: chỉ lấy dữ liệu khi camera có cấu hình entityId riêng
 const SENSOR_POLL_INTERVAL_MS = Number(
     process.env.SENSOR_POLL_INTERVAL_MS || 5000
 );

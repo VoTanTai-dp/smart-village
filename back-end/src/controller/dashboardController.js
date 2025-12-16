@@ -42,6 +42,7 @@ const getSensorDashboard = async (req, res) => {
                 let historyRows = [];
                 let latestCount = null;
 
+<<<<<<< HEAD
                 // Bản ghi Data mới nhất (nếu có)
                 latestData = await db.Data.findOne({
                     where: { sessionId },
@@ -56,6 +57,9 @@ const getSensorDashboard = async (req, res) => {
                 });
 
                 // Bản ghi Count mới nhất (nếu có model Count)
+=======
+                // Luôn lấy latestCount từ DB
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
                 if (CountModel) {
                     latestCount = await CountModel.findOne({
                         where: { sessionId },
@@ -63,9 +67,26 @@ const getSensorDashboard = async (req, res) => {
                     });
                 }
 
+                // Luôn lấy sensor Data từ DB (nếu có), không phụ thuộc HA
+                latestData = await db.Data.findOne({
+                    where: { sessionId },
+                    order: [['createdAt', 'DESC']],
+                });
+
+                // Lịch sử N bản ghi gần nhất (vd 20)
+                historyRows = await db.Data.findAll({
+                    where: { sessionId },
+                    order: [['createdAt', 'DESC']],
+                    limit: 20,
+                });
+
                 const formatTimestamp = (row) =>
                     row?.atTime || row?.createdAt?.toISOString?.() || row?.createdAt || null;
 
+<<<<<<< HEAD
+=======
+                // Luôn xây latestRecord, ưu tiên timestamp từ latestData, fallback latestCount
+>>>>>>> 38f7fc86d4cc7b75b2418a8f00ab6ae395357ff4
                 const ts = latestData ? formatTimestamp(latestData) : (latestCount ? formatTimestamp(latestCount) : null);
                 latestRecord = {
                     temperature: latestData ? (latestData.temperature ?? null) : null,
@@ -75,6 +96,7 @@ const getSensorDashboard = async (req, res) => {
                     timestamp: ts,
                 };
 
+                // Lịch sử sensor (nếu có) vẫn giữ như cũ, gắn people/vehicle theo latestCount để tham khảo
                 history = (historyRows || []).map((row) => ({
                     timestamp: formatTimestamp(row),
                     temperature: row.temperature ?? null,
