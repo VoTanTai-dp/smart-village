@@ -2,6 +2,7 @@ import streamService from '../service/streamService';
 import cameraService from '../service/cameraService.js';
 import sessionService from '../service/sessionService.js';
 import sensorService from '../service/sensorService.js';
+import counterService from '../service/counterService.js';
 import config from '../config/stream.config';
 
 const healthCheck = async (req, res) => {
@@ -74,6 +75,7 @@ const startStream = async (req, res) => {
             rtspUrl,
             wsUrl: `ws://localhost:${config.wsPort}`, // video WS
             sensorWsUrl: `ws://localhost:${process.env.SENSOR_WS_PORT || 9998}`, // sensor WS
+            counterWsUrl: `ws://localhost:${process.env.COUNTER_WS_PORT || 9997}`, // counter WS
             sessionId: session?.id || null,
         });
     } catch (err) {
@@ -98,6 +100,7 @@ const stopStream = async (req, res) => {
             const ended =
                 await sessionService.endSessionById(activeSession.id);
             sensorService.stopSensorJobBySessionId(activeSession.id);
+            counterService.stopCountingBySessionId(activeSession.id);
 
             console.log(
                 `>>> End session ${ended.id} for camera ${cameraId} at ${ended.endDate}`
@@ -136,6 +139,9 @@ const stopAllStreams = async (req, res) => {
                             activeSession.id
                         );
                     sensorService.stopSensorJobBySessionId(
+                        activeSession.id
+                    );
+                    counterService.stopCountingBySessionId(
                         activeSession.id
                     );
                     console.log(
@@ -236,12 +242,13 @@ const connectStreamByCredentials = async (req, res) => {
             console.log(`>>> Reuse active session ${session.id} for camera ${cameraId}`);
         }
 
-        // Sensor job real-time
+        // Sensor job real-time and Counter job
         if (session && session.id) {
             await sensorService.startSensorJobForCamera({
                 sessionId: session.id,
                 camera,
             });
+            await counterService.startCountingForCamera({ sessionId: session.id, camera });
         }
 
         return res.json({
@@ -251,6 +258,7 @@ const connectStreamByCredentials = async (req, res) => {
             rtspUrl,
             wsUrl: `ws://localhost:${config.wsPort}`,
             sensorWsUrl: `ws://localhost:${process.env.SENSOR_WS_PORT || 9998}`,
+            counterWsUrl: `ws://localhost:${process.env.COUNTER_WS_PORT || 9997}`,
             sessionId: session?.id || null,
         });
     } catch (err) {

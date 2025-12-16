@@ -6,7 +6,9 @@ import db from '../models';
 
 const HA_HOST = process.env.HA_HOST || 'http://localhost:8123';
 const HA_TOKEN = process.env.HA_TOKEN;
-// Không dùng mặc định: chỉ lấy dữ liệu khi camera có cấu hình entityId riêng
+const HA_DEVICE_TEMP = process.env.HA_DEVICE_TEMP || null;
+const HA_DEVICE_HUM = process.env.HA_DEVICE_HUM || null;
+// Không dùng mặc định: chỉ lấy dữ liệu khi camera có cấu hình entityId riêng (hoặc fallback .env)
 const SENSOR_POLL_INTERVAL_MS = Number(
     process.env.SENSOR_POLL_INTERVAL_MS || 5000
 );
@@ -107,14 +109,15 @@ const startSensorJobForCamera = ({ sessionId, camera }) => {
 
     initSensorWebSocketServer();
 
-    const tempEntity = camera.haTemperatureEntityId;
-    const humEntity = camera.haHumidityEntityId;
+    // Ưu tiên entity theo camera; nếu thiếu thì fallback về .env (HA_DEVICE_TEMP/HA_DEVICE_HUM)
+    const tempEntity = camera.haTemperatureEntityId || HA_DEVICE_TEMP;
+    const humEntity = camera.haHumidityEntityId || HA_DEVICE_HUM;
 
     if (!tempEntity || !humEntity) {
         console.log(
-            `[sensorService] Skip sensor job for camera ${camera.id} because entityId not set`
+            `[sensorService] Skip sensor job for camera ${camera.id} because entityId not set and no fallback in .env`
         );
-        return; // KHÔNG tạo job nếu thiếu entity
+        return; // KHÔNG tạo job nếu thiếu entity cả camera lẫn .env
     }
 
     console.log(
