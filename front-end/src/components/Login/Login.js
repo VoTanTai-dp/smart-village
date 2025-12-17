@@ -37,9 +37,22 @@ const Login = (props) => {
 
             if (response && response.data && +serverData.EC === 0) {
                 toast.success(serverData.EM);
+                const token = serverData?.DT?.token;
+                const u = serverData?.DT?.user || {};
+                if (!token) {
+                    toast.error('Đăng nhập thất bại: thiếu token');
+                    return;
+                }
                 let data = {
                     isAuthenticated: true,
-                    token: 'fake token' // Bạn nên lấy token thật từ serverData nếu có
+                    token,
+                    email: u.email || valueLogin,
+                    groupId: u.groupId,
+                    group: u.group,
+                    userId: u.id,
+                    username: u.username,
+                    phone: u.phone,
+                    avatar: u.avatar,
                 }
                 sessionStorage.setItem('account', JSON.stringify(data));
                 history.push('/');

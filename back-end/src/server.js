@@ -2,7 +2,8 @@ import express from 'express';
 import configViewEngine from './config/viewEngine';
 import configCors from './config/cors';
 import initeWebRoutes from './routes/web';
-//repuire('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 import bodyParser from 'body-parser';
 // import connection from './config/connectDB';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -11,6 +12,8 @@ import swaggerSpec from './config/swagger';
 import initApiRoutes from './routes/api';
 import expressWs from 'express-ws';
 import streamService from './service/streamService';
+import sensorService from './service/sensorService';
+import counterService from './service/counterService';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -34,8 +37,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //init api routes
 initApiRoutes(app);
 
-//init web socket
+//init stream web socket
 streamService.initWebSocketServer();
+
+//init sensor web socket
+sensorService.initSensorWebSocketServer();
+
+//init counter web socket
+counterService.initCounterWebSocketServer();
 
 //connect to database
 // connection();

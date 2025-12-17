@@ -1,4 +1,5 @@
 import db from '../models';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 import Bluebird from 'bluebird';
@@ -106,10 +107,39 @@ const getUserById = async (id) => {
 const updateUser = async (id, payload) => {
     const user = await db.User.findByPk(id);
     if (!user) return null;
-    let hashPass = hashUserPassword(payload.password);
-    payload.password = hashPass;
+    // Nếu có password thì hash, còn không thì bỏ qua
+    if (payload.password) {
+        let hashPass = hashUserPassword(payload.password);
+        payload.password = hashPass;
+    } else {
+        delete payload.password;
+    }
     await user.update(payload);
     return user;
+};
+
+// Cập nhật thông tin không đổi mật khẩu
+const updateUserInfo = async (id, payload) => {
+    const user = await db.User.findByPk(id);
+    if (!user) return null;
+    const { email, username, phone, sex } = payload;
+    await user.update({ email, username, phone, sex });
+    return user;
+};
+
+const getUserByEmail = async (email) => {
+    return db.User.findOne({ where: { email }, include: [{ model: db.Group, attributes: ['description'] }] });
+};
+
+const changePassword = async (id, oldPassword, newPassword) => {
+    const user = await db.User.findByPk(id);
+    if (!user) return { ok: false, reason: 'USER_NOT_FOUND' };
+    const ok = checkPassword(oldPassword, user.password);
+    if (!ok) return { ok: false, reason: 'INVALID_OLD_PASSWORD' };
+    const hash = hashUserPassword(newPassword);
+    user.password = hash;
+    await user.save();
+    return { ok: true };
 };
 
 const deleteUser = async (id) => {
@@ -127,6 +157,18 @@ const checkPassword = (inputPassword, hashPass) => {
     return bcrypt.compareSync(inputPassword, hashPass); //true or false
 }
 
+const getUserByLogin = async (valueLogin) => {
+    return db.User.findOne({
+        where: {
+            [Op.or]: [
+                { email: valueLogin },
+                { phone: valueLogin }
+            ]
+        },
+        include: [{ model: db.Group, attributes: ['description'] }]
+    });
+};
+
 const handleUserLogin = async (payload) => {
     try {
         let user = await db.User.findOne({
@@ -135,17 +177,36 @@ const handleUserLogin = async (payload) => {
                     { email: payload.valueLogin },
                     { phone: payload.valueLogin }
                 ]
-            }
+            },
+            include: [{ model: db.Group, attributes: ['id', 'groupname', 'description'] }]
         })
 
         if (user) {
             let isCorrectPassword = checkPassword(payload.password, user.password);
 
             if (isCorrectPassword === true) {
+                const secret = process.env.JWT_SECRET || 'smartvillage_secret';
+                const payloadJWT = {
+                    id: user.id,
+                    email: user.email,
+                    groupId: user.groupId,
+                };
+                const token = jwt.sign(payloadJWT, secret, { expiresIn: '7d' });
                 return {
                     EM: 'Login successfully',
                     EC: '0',
-                    DT: ''
+                    DT: {
+                        token,
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                            username: user.username,
+                            phone: user.phone,
+                            groupId: user.groupId,
+                            group: user.Group ? { id: user.Group.id, groupname: user.Group.groupname } : null,
+                            avatar: user.avatar,
+                        }
+                    }
                 }
             }
         }
@@ -173,11 +234,12 @@ module.exports = {
     getAllUsers,
     getUserById,
     updateUser,
+    updateUserInfo,
+    getUserByEmail,
+    changePassword,
     deleteUser,
     deleteAllUsers,
     checkPassword,
-    handleUserLogin
-    // createNewUser,
-    // getUserList,
-    // updateUserInfor
+    handleUserLogin,
+    getUserByLogin
 };

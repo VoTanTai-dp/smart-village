@@ -22,7 +22,9 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     port: DataTypes.STRING,
-    address: DataTypes.STRING
+    address: DataTypes.STRING,
+    haTemperatureEntityId: DataTypes.STRING,
+    haHumidityEntityId: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Camera',

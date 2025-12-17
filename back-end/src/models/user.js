@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     phone: DataTypes.STRING,
-    sex: DataTypes.STRING
+    sex: DataTypes.STRING,
+    avatar: { type: DataTypes.STRING, defaultValue: '/uploads/blank-avatar.jpg' }
   }, {
     sequelize,
     modelName: 'User',

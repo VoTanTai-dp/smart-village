@@ -13,7 +13,6 @@
         margin-bottom: 1.5rem;
     }
 
-    // --- Sub Navigation (Tabs) ---
     .sub-nav {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 2rem;
@@ -43,28 +42,15 @@
                 }
             }
         }
-
-        .nav-controls {
-            button {
-                background: transparent;
-                border: none;
-                color: $text-white;
-                padding: 0.5rem;
-                border-radius: 50%;
-                transition: background 0.2s;
-
-                &:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-
-                .material-symbols-outlined {
-                    font-size: 1.25rem;
-                }
-            }
-        }
     }
 
-    // --- Sensor Card ---
+    // tiêu đề khu vực (address)
+    .area-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: $primary-color;
+    }
+
     .sensor-card {
         background-color: $surface-dark;
         border-radius: 0.75rem;
@@ -101,7 +87,6 @@
             margin-bottom: 0.75rem;
         }
 
-        // --- Latest Record Box ---
         .latest-record-box {
             background-color: $bg-dark;
             border-radius: 0.5rem;
@@ -135,12 +120,20 @@
 
         // --- Historical Table ---
         .table-responsive {
+            // GIỚI HẠN CHIỀU CAO, BẬT SCROLL
+            max-height: 260px;
+            overflow-y: auto;
+
             .custom-table {
                 width: 100%;
                 color: $text-white;
                 font-size: 0.875rem;
 
                 thead {
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+
                     th {
                         background-color: $bg-dark;
                         color: $text-muted-dark;

@@ -1,4 +1,3 @@
-// front-end/src/components/Camera/Camera.js
 import React, { useEffect, useRef, useState } from 'react';
 import './Camera.scss';
 import {
@@ -37,11 +36,16 @@ const Camera = () => {
     const [inputPassword, setInputPassword] = useState('');
     const [inputPort, setInputPort] = useState('');
     const [inputAddress, setInputAddress] = useState('');
+    const [inputHaTempEntityId, setInputHaTempEntityId] = useState('');
+    const [inputHaHumEntityId, setInputHaHumEntityId] = useState('');
 
     const [cameras, setCameras] = useState([]);
+    const camerasRef = useRef([]);
 
     // Danh sách camera đang stream (multi-camera)
     const [streamingCameraIds, setStreamingCameraIds] = useState([]);
+    const streamingIdsRef = useRef([]);
+    const discoveredIdsRef = useRef(new Set());
 
     const defaultObjValidInput = {
         isValidIP: true,
@@ -108,20 +112,47 @@ const Camera = () => {
         return valid;
     };
 
-    const loadCameras = async () => {
+    // Helpers lưu trạng thái ẩn camera ở localStorage
+    const getHiddenCameraIds = () => {
+        try {
+            const raw = localStorage.getItem('hiddenCameras');
+            const arr = raw ? JSON.parse(raw) : [];
+            if (Array.isArray(arr)) return arr.map((x) => Number(x));
+            return [];
+        } catch {
+            return [];
+        }
+    };
+    const setHiddenCameraIds = (ids) => {
+        try {
+            localStorage.setItem('hiddenCameras', JSON.stringify(ids));
+        } catch {
+            // ignore
+        }
+    };
+
+    const loadCameras = async (activeIds = []) => {
         try {
             const list = await getCameras();
-            list.sort((a, b) => {
+            const hidden = new Set(getHiddenCameraIds());
+            // Luôn hiển thị camera đang stream, ngay cả khi nằm trong hidden
+            const filtered = list.filter((c) => {
+                const id = Number(c.id);
+                if (activeIds.includes(id)) return true;
+                return !hidden.has(id);
+            });
+
+            filtered.sort((a, b) => {
                 const aa = (a.address || '').toLowerCase();
                 const bb = (b.address || '').toLowerCase();
                 if (aa < bb) return -1;
                 if (aa > bb) return 1;
                 return a.id - b.id;
             });
-            setCameras(list);
+            setCameras(filtered);
+            camerasRef.current = filtered;
 
-            // Nếu không có camera nào trong database -> auto mở modal tạo kết nối
-            if (list.length === 0) {
+            if (filtered.length === 0) {
                 setShowModal(true);
             }
         } catch (error) {
@@ -160,6 +191,20 @@ const Camera = () => {
                 // Ép cameraId về number để đồng bộ với camera.id & fullscreenCameraIdRef
                 const camId = Number(message.cameraId);
                 const { data } = message;
+
+                // Nếu lần đầu thấy camId này trong stream, cập nhật state ngay để hiển thị
+                if (!streamingIdsRef.current.includes(camId)) {
+                    streamingIdsRef.current = [...streamingIdsRef.current, camId];
+                    setStreamingCameraIds((prev) => (prev.includes(camId) ? prev : [...prev, camId]));
+                }
+
+                // Đảm bảo camera xuất hiện trong danh sách nếu đang bị ẩn hoặc chưa load
+                const existsInList = Array.isArray(camerasRef.current) && camerasRef.current.some(c => Number(c.id) === camId);
+                if (!existsInList && !discoveredIdsRef.current.has(camId)) {
+                    discoveredIdsRef.current.add(camId);
+                    // Gọi loadCameras với camId để ép camera này hiển thị ngay
+                    loadCameras([camId]);
+                }
 
                 // Canvas ô tile
                 const canvasEl = canvasRefs.current[camId];
@@ -224,6 +269,12 @@ const Camera = () => {
             setStreamingCameraIds((prev) =>
                 prev.includes(cameraId) ? prev : [...prev, cameraId]
             );
+            streamingIdsRef.current = [...new Set([...streamingIdsRef.current, cameraId])];
+            // Bỏ khỏi hidden để hiển thị trở lại nếu đã từng ẩn
+            const hidden = new Set(getHiddenCameraIds());
+            hidden.delete(Number(cameraId));
+            setHiddenCameraIds(Array.from(hidden));
+            await loadCameras([cameraId]);
             initStreamWebSocket();
         } catch (error) {
             console.error('startStreamForCamera error:', error);
@@ -231,26 +282,25 @@ const Camera = () => {
         }
     };
 
-    // Disconnect: stop stream + xóa camera khỏi DB
+    // Disconnect: chỉ ngắt kết nối stream, KHÔNG xóa camera khỏi DB
     const handleDisconnectCamera = async (cameraId) => {
         try {
-            // nếu đang stream thì stop trước
+            // Nếu đang stream thì stop
             if (streamingCameraIds.includes(cameraId)) {
                 await stopSingleCameraStream(cameraId);
             }
 
-            // xóa khỏi database
-            await deleteCamera(cameraId);
+            // Cập nhật state streaming
+            setStreamingCameraIds((prev) => prev.filter((id) => id !== cameraId));
 
-            // cập nhật state streaming
-            setStreamingCameraIds((prev) =>
-                prev.filter((id) => id !== cameraId)
-            );
-
-            // cập nhật danh sách cameras
+            // Loại bỏ camera khỏi giao diện (KHÔNG xóa DB)
             setCameras((prev) => prev.filter((cam) => cam.id !== cameraId));
+            // Ghi nhận id camera đã ẩn vào localStorage để ẩn cả sau khi reload
+            const hidden = new Set(getHiddenCameraIds());
+            hidden.add(Number(cameraId));
+            setHiddenCameraIds(Array.from(hidden));
 
-            // clear canvas
+            // Clear canvas của camera
             const canvasEl = canvasRefs.current[cameraId];
             if (canvasEl) {
                 const ctx = canvasEl.getContext('2d');
@@ -260,12 +310,12 @@ const Camera = () => {
             }
             delete canvasRefs.current[cameraId];
 
-            // nếu đang fullscreen camera này thì đóng fullscreen
+            // Nếu đang fullscreen camera này thì đóng fullscreen
             if (fullscreenCameraIdRef.current === cameraId) {
                 handleCloseFullscreen();
             }
 
-            toast.success('Camera disconnected and removed');
+            toast.success('Camera disconnected');
         } catch (error) {
             console.error('handleDisconnectCamera error:', error);
             toast.error('Failed to disconnect camera');
@@ -293,6 +343,8 @@ const Camera = () => {
                 password: inputPassword,
                 port: inputPort,
                 address: inputAddress,
+                haTemperatureEntityId: inputHaTempEntityId || undefined,
+                haHumidityEntityId: inputHaHumEntityId || undefined,
             });
 
             toast.success('Camera created successfully');
@@ -302,6 +354,8 @@ const Camera = () => {
             setInputPassword('');
             setInputPort('');
             setInputAddress('');
+            setInputHaTempEntityId('');
+            setInputHaHumEntityId('');
             setShowModal(false);
 
             await loadCameras();
@@ -333,19 +387,18 @@ const Camera = () => {
 
     useEffect(() => {
         const initPage = async () => {
-            await loadCameras();
-            initStreamWebSocket();
-
             try {
                 const activeIds = await getStreamingCameraIds();
-                if (Array.isArray(activeIds)) {
-                    setStreamingCameraIds(activeIds.map((id) => Number(id)));
-                } else {
-                    setStreamingCameraIds([]);
-                }
+                const activeNums = Array.isArray(activeIds)
+                    ? activeIds.map((id) => Number(id))
+                    : [];
+                setStreamingCameraIds(activeNums);
+                await loadCameras(activeNums);
             } catch (error) {
                 console.error('getStreamingCameraIds error:', error);
+                await loadCameras([]);
             }
+            initStreamWebSocket();
         };
 
         initPage();
@@ -497,8 +550,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidIP
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 192.168.1.100"
                                                 value={inputIP}
@@ -514,8 +567,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidUsername
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's username"
                                                 value={inputUsername}
@@ -533,9 +586,9 @@ const Camera = () => {
                                             <input
                                                 type="password"
                                                 className={`form-control custom-input ${objValidInput
-                                                        .isValidPassword
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    .isValidPassword
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="Enter camera's password"
                                                 value={inputPassword}
@@ -553,8 +606,8 @@ const Camera = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidPort
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., 554"
                                                 value={inputPort}
@@ -564,14 +617,35 @@ const Camera = () => {
                                             />
                                         </div>
                                         <div className="mb-3">
+                                            <label className="form-label">HA Temperature Entity ID</label>
+                                            <input
+                                                type="text"
+                                                className="form-control custom-input"
+                                                placeholder="sensor.sonoff_100170f83e_temperature"
+                                                value={inputHaTempEntityId}
+                                                onChange={(e) => setInputHaTempEntityId(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">HA Humidity Entity ID</label>
+                                            <input
+                                                type="text"
+                                                className="form-control custom-input"
+                                                placeholder="sensor.sonoff_100170f83e_humidity"
+                                                value={inputHaHumEntityId}
+                                                onChange={(e) => setInputHaHumEntityId(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
                                             <label className="form-label">
                                                 Address
                                             </label>
                                             <input
                                                 type="text"
                                                 className={`form-control custom-input ${objValidInput.isValidAddress
-                                                        ? ''
-                                                        : 'is-invalid'
+                                                    ? ''
+                                                    : 'is-invalid'
                                                     }`}
                                                 placeholder="e.g., Main Gate"
                                                 value={inputAddress}

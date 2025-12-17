@@ -7,13 +7,23 @@ const getCameras = async () => {
     return res.data?.data?.data || res.data?.data || [];
 };
 
-const createCamera = async ({ ip, username, password, port, address }) => {
+const createCamera = async ({
+    ip,
+    username,
+    password,
+    port,
+    address,
+    haTemperatureEntityId,
+    haHumidityEntityId,
+}) => {
     const res = await axios.post(`${API_BASE}/cameras`, {
         ip,
         username,
         password,
         port,
         address,
+        haTemperatureEntityId,
+        haHumidityEntityId,
     });
     return res.data?.data;
 };

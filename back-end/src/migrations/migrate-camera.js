@@ -26,6 +26,14 @@ module.exports = {
       address: {
         type: Sequelize.STRING
       },
+      haTemperatureEntityId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      haHumidityEntityId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

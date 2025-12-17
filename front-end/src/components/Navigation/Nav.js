@@ -7,24 +7,53 @@ const Nav = (props) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     // 1. Thêm state để kiểm tra trạng thái đăng nhập
     const [isLogin, setIsLogin] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const location = useLocation();
     const history = useHistory();
 
     useEffect(() => {
-        // Ẩn Nav ở trang login và register
-        if (location.pathname === '/login' || location.pathname === '/register') {
+        // Danh sách route hợp lệ sẽ hiển thị Nav
+        const allowed = [
+            '/',
+            '/login',
+            '/register',
+            '/camera',
+            '/dashboard',
+            '/smartswitch',
+            '/modelai',
+            '/database',
+            '/profile',
+        ];
+        const path = location.pathname || '';
+        const show = allowed.some((p) => path === p || path.startsWith(p + '/'));
+        // Ẩn Nav khi truy cập đường dẫn không tồn tại (NotFound)
+        if (!show) {
             setIsShow(false);
         } else {
-            setIsShow(true);
+            // Riêng trang login/register cũng ẩn Nav
+            if (path === '/login' || path === '/register') setIsShow(false);
+            else setIsShow(true);
         }
 
         // 2. Kiểm tra session mỗi khi location thay đổi (để cập nhật ngay khi login/logout xong)
         let session = sessionStorage.getItem('account');
         if (session) {
             setIsLogin(true);
+            try {
+                const obj = JSON.parse(session);
+                setUserEmail(obj?.email || '');
+                const gId = obj?.groupId ?? obj?.group_id ?? obj?.group?.id;
+                const gName = obj?.group?.groupname ?? obj?.groupName;
+                const gidNum = Number(gId);
+                setIsAdmin(gidNum === 1 || (gName && String(gName).toLowerCase() === 'admin'));
+            } catch {
+                setUserEmail('');
+            }
         } else {
             setIsLogin(false);
+            setUserEmail('');
         }
     }, [location]);
 
@@ -67,11 +96,17 @@ const Nav = (props) => {
 
                         {/* Desktop Menu */}
                         <div className="d-none d-md-flex flex-grow-1 justify-content-end align-items-center gap-4">
-                            <div className="nav-links d-flex gap-4">
+                            <div className="nav-links d-flex gap-4 align-items-center">
                                 <NavLink to="/camera" className="nav-item">Camera</NavLink>
                                 <NavLink to="/dashboard" className="nav-item">Dashboard</NavLink>
-                                <NavLink to="/modelai" className="nav-item">Model AI</NavLink>
-                                <NavLink to="/database" className="nav-item">Database</NavLink>
+                                <NavLink to="/smartswitch" className="nav-item">SmartSwitch</NavLink>
+                                {isAdmin && <NavLink to="/database" className="nav-item">Database</NavLink>}
+                                {isLogin && userEmail && (
+                                    <NavLink to="/profile" className="nav-item">
+                                        <span className="user-email ms-2 me-2 text-white-50 small">{userEmail}</span>
+                                    </NavLink>
+
+                                )}
                             </div>
 
                             {/* 4. Render có điều kiện cho Desktop */}
@@ -83,7 +118,7 @@ const Nav = (props) => {
                                         <button className="btn btn-primary btn-sm fw-bold text-dark" onClick={handleRegister}>Sign Up</button>
                                     </>
                                 ) : (
-                                    // Đã đăng nhập: Hiện nút Logout
+                                    // Đã đăng nhập: Hiện email và nút Logout
                                     <button className="btn btn-danger btn-sm fw-bold" onClick={handleLogout}><i className="bi bi-box-arrow-right" style={{ fontSize: "1rem" }}></i></button>
                                 )}
                             </div>
@@ -92,7 +127,7 @@ const Nav = (props) => {
                         {/* Mobile Menu Toggle */}
                         <div className="d-md-none">
                             <button className="btn text-white p-0" onClick={toggleMobileMenu}>
-                                <span className="material-symbols-outlined fs-2">Menu</span>
+                                <i className="bi bi-list" style={{ fontSize: '1.5rem' }}></i>
                             </button>
                         </div>
                     </div>
@@ -102,8 +137,11 @@ const Nav = (props) => {
                         <div className="mobile-menu d-md-none bg-dark p-3 border-top border-secondary">
                             <NavLink to="/camera" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Camera</NavLink>
                             <NavLink to="/dashboard" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</NavLink>
-                            <NavLink to="/modelai" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Model AI</NavLink>
-                            <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
+                            <NavLink to="/smartswitch" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>SmartSwitch</NavLink>
+                            {isAdmin && (
+                                <NavLink to="/database" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Database</NavLink>
+                            )}
+                            <NavLink to="/profile" className="d-block py-2 text-white text-decoration-none" onClick={() => setIsMobileMenuOpen(false)}>Profile</NavLink>
                             <hr className="text-white" />
 
                             {/* 5. Render có điều kiện cho Mobile */}

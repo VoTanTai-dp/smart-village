@@ -16,7 +16,7 @@ const HomePage = (props) => {
                             <div className="hero-content max-w-2xl">
                                 <h1 className="hero-title mb-3">Centralized Rural Monitoring and Safety, Simplified.</h1>
                                 <h2 className="hero-subtitle mb-4">Connect and manage your IP cameras, IoT sensors, and AI-powered safety features from a single, unified dashboard for comprehensive management.</h2>
-                                <button className="btn btn-primary text-dark fw-bold px-4 py-2 rounded-3" onClick={() => history.push('/register')}>
+                                <button className="btn btn-primary text-dark fw-bold px-4 py-2 rounded-3" onClick={() => history.push('/login')}>
                                     Get Started
                                 </button>
                             </div>
@@ -122,7 +122,7 @@ const HomePage = (props) => {
                         <div className="cta-box bg-primary-subtle rounded-4 p-5 text-center">
                             <h2 className="fw-bold text-white mb-3">Ready to Enhance Your Rural Operations?</h2>
                             <p className="text-white-80 mb-4 max-w-2xl mx-auto">Get a complete overview of your properties, ensure safety with AI-powered alerts, and manage everything from one simple dashboard.</p>
-                            <button className="btn btn-primary text-dark fw-bold px-4 py-2">Request a Demo</button>
+                            <button className="btn btn-primary text-dark fw-bold px-4 py-2" onClick={() => history.push('/register')}>Request a Demo</button>
                         </div>
                     </div>
                 </section>

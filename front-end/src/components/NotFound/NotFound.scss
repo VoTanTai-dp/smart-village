@@ -1,0 +1,150 @@
+@import '../../styles/variables';
+
+.not-found-container {
+    background-color: $bg-dark;
+    min-height: calc(100vh - 60px); // Trừ đi chiều cao Nav nếu cần
+    color: $text-white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    // --- Background Grid Effect ---
+    .bg-grid-pattern {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.07;
+        pointer-events: none;
+
+        // Tạo lưới bằng CSS Gradient
+        background-image:
+            linear-gradient(to right, $grid-line-color 1px, transparent 1px),
+            linear-gradient(to bottom, $grid-line-color 1px, transparent 1px);
+        background-size: 40px 40px;
+
+        // Tạo hiệu ứng mờ dần xuống dưới
+        mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    }
+
+    // --- Main Content ---
+    .content-wrapper {
+        position: relative;
+        z-index: 10;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        text-align: center;
+
+        .error-code {
+            font-size: 100px;
+            font-weight: 900;
+            line-height: 1;
+            color: $primary-color;
+            opacity: 0.9;
+            user-select: none;
+            text-shadow: 0 0 40px rgba($primary-color, 0.15);
+            margin-bottom: 1rem;
+
+            @media (min-width: 768px) {
+                font-size: 120px;
+            }
+        }
+
+        .error-title {
+            font-size: 1.875rem; // ~30px
+            font-weight: 700;
+            color: $text-white;
+            margin-bottom: 1rem;
+
+            @media (min-width: 768px) {
+                font-size: 2.25rem; // ~36px
+            }
+        }
+
+        .error-desc {
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6); // text-gray-400
+            max-width: 460px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-home {
+            background-color: $primary-color;
+            color: $bg-dark; // Chữ màu tối trên nền sáng
+            font-weight: 700;
+            height: 3rem; // h-12
+            padding: 0 2rem;
+            border-radius: 0.5rem;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 15px rgba($primary-color, 0.2);
+
+            &:hover {
+                background-color: darken($primary-color, 5%); // hover:bg-[#0ebbdc]
+                box-shadow: 0 0 25px rgba($primary-color, 0.4);
+                transform: translateY(-1px);
+            }
+
+            .material-symbols-outlined {
+                font-size: 1.25rem;
+            }
+        }
+    }
+
+    // --- Footer ---
+    .not-found-footer {
+        position: relative;
+        z-index: 10;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba($bg-dark, 0.9);
+        padding: 1.5rem 0;
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            color: rgba(255, 255, 255, 0.5); // text-gray-500
+            font-size: 0.875rem;
+            font-weight: 500;
+
+            @media (min-width: 768px) {
+                flex-direction: row;
+                gap: 2rem;
+            }
+
+            .separator {
+                display: none;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background-color: $grid-line-color;
+
+                @media (min-width: 768px) {
+                    display: block;
+                }
+            }
+
+            a {
+                color: rgba(255, 255, 255, 0.5);
+                text-decoration: none;
+                transition: color 0.2s;
+
+                &:hover {
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+}
