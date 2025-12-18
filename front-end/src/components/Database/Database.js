@@ -339,7 +339,14 @@ const FormEditor = ({ table, columns, primaryKey = 'id', row, onSaved, onClose, 
 
   const optionalFields = ['avatar', 'description', 'note', 'address', 'createdAt', 'updatedAt'];
   const isEmailField = (name) => /email/i.test(name);
-  const isNumberField = (name) => /(id|count|number|age|price|quantity|total|phone)/i.test(name) && name.toLowerCase() !== (primaryKey || 'id').toLowerCase();
+  const isNumberField = (name) => {
+    const n = String(name || '').trim();
+    // Force these to be treated as strings, not numbers
+    if (/^(haTemperatureEntityId|haHumidityEntityId)$/i.test(n)) return false;
+    // Treat common numeric-like fields as numbers, excluding the primary key itself
+    const looksNumeric = /(count|number|age|price|quantity|total|phone)/i.test(n) || (/id$/i.test(n) && n.toLowerCase() !== (primaryKey || 'id').toLowerCase());
+    return looksNumeric;
+  };
 
   const validateField = (name, value) => {
     let err = '';

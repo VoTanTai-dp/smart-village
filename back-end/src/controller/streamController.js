@@ -201,10 +201,28 @@ const getStreamingCameras = (req, res) => {
     }
 };
 
-// Connect stream bằng credentials (không tạo bản ghi trùng trong DB)
+// Connect stream bằng credentials (ưu tiên tái sử dụng camera cũ nếu đã tồn tại)
 const connectStreamByCredentials = async (req, res) => {
     try {
-        const { ip, username, password, port, address, haTemperatureEntityId, haHumidityEntityId } = req.body || {};
+        let { ip, username, password, port, address, haTemperatureEntityId, haHumidityEntityId, userId } = req.body || {};
+
+        // Chuẩn hóa input: trim và chuyển chuỗi rỗng thành null
+        const normalize = (v) => {
+            if (v === undefined || v === null) return null;
+            if (typeof v === 'string') {
+                const t = v.trim();
+                return t.length ? t : null;
+            }
+            return v;
+        };
+        ip = normalize(ip);
+        username = normalize(username);
+        password = normalize(password);
+        port = normalize(port);
+        address = normalize(address);
+        haTemperatureEntityId = normalize(haTemperatureEntityId);
+        haHumidityEntityId = normalize(haHumidityEntityId);
+        userId = normalize(userId);
 
         if (!ip || !username || !password) {
             return res.status(400).json({
@@ -214,17 +232,34 @@ const connectStreamByCredentials = async (req, res) => {
             });
         }
 
-        // Tìm nếu đã có camera với cùng ip/username/password; nếu chưa có thì tạo mới
-        const cameraRow = await cameraService.findOrCreateFullMatch({
-            userId: req.body.userId ?? null,
-            ip,
-            username,
-            password,
-            port,
-            address,
-            haTemperatureEntityId,
-            haHumidityEntityId,
-        });
+        // B1: Tìm camera theo ip+username+password (bỏ qua các trường tùy chọn)
+        let cameraRow = await cameraService.findByCredentials({ ip, username, password });
+
+        if (cameraRow) {
+            // Nếu có camera cũ -> cập nhật các trường tùy chọn nếu truyền vào
+            const updatePayload = {};
+            if (port !== null) updatePayload.port = String(port);
+            if (address !== null) updatePayload.address = address;
+            if (haTemperatureEntityId !== null) updatePayload.haTemperatureEntityId = haTemperatureEntityId;
+            if (haHumidityEntityId !== null) updatePayload.haHumidityEntityId = haHumidityEntityId;
+            if (userId !== null) updatePayload.userId = userId;
+            if (Object.keys(updatePayload).length > 0) {
+                cameraRow = await cameraService.updateCamera(cameraRow.id, updatePayload) || cameraRow;
+            }
+        } else {
+            // Không có -> tạo mới
+            cameraRow = await cameraService.createCamera({
+                userId: userId ?? null,
+                ip,
+                username,
+                password, // createCamera sẽ mã hóa pass
+                port: port !== null ? String(port) : null,
+                address,
+                haTemperatureEntityId,
+                haHumidityEntityId,
+            });
+        }
+
         const cameraId = Number(cameraRow.id);
 
         // Lấy credentials đã giải mã để build RTSP
