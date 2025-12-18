@@ -7,6 +7,7 @@ import {
     stopSingleCameraStream,
     deleteCamera,
     getStreamingCameraIds,
+    connectCameraByCredentials,
 } from '../../services/cameraStreamService';
 import { toast } from 'react-toastify';
 
@@ -336,8 +337,12 @@ const Camera = () => {
         setObjValidInput(defaultObjValidInput);
         if (!validateInput()) return;
 
+        // Ẩn modal ngay lập tức để UX mượt hơn
+        setShowModal(false);
+
         try {
-            const camera = await createCamera({
+            // Gọi endpoint connect theo credentials để tạo/tìm camera và start stream ngay
+            const res = await connectCameraByCredentials({
                 ip: inputIP,
                 username: inputUsername,
                 password: inputPassword,
@@ -347,8 +352,7 @@ const Camera = () => {
                 haHumidityEntityId: inputHaHumEntityId || undefined,
             });
 
-            toast.success('Camera created successfully');
-
+            // Dọn input
             setInputIP('');
             setInputUsername('');
             setInputPassword('');
@@ -356,12 +360,27 @@ const Camera = () => {
             setInputAddress('');
             setInputHaTempEntityId('');
             setInputHaHumEntityId('');
-            setShowModal(false);
 
-            await loadCameras();
+            if (res?.success && res?.cameraId) {
+                const camId = Number(res.cameraId);
+                // Đánh dấu đang stream để render ô và nhận frame
+                setStreamingCameraIds((prev) => (prev.includes(camId) ? prev : [...prev, camId]));
+                streamingIdsRef.current = [...new Set([...streamingIdsRef.current, camId])];
 
-            if (camera && camera.id) {
-                await startStreamForCamera(camera.id);
+                // Gỡ khỏi hidden nếu có
+                const hidden = new Set(getHiddenCameraIds());
+                hidden.delete(camId);
+                setHiddenCameraIds(Array.from(hidden));
+
+                // Load danh sách đảm bảo camera hiển thị
+                await loadCameras([camId]);
+
+                // Đảm bảo WS đã connect để nhận frame ngay
+                initStreamWebSocket();
+
+                toast.success('Camera connected and streaming');
+            } else {
+                toast.error(res?.message || 'Connect failed');
             }
         } catch (error) {
             console.error('handleConnectCamera error:', error);

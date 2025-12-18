@@ -59,6 +59,28 @@ const getStreamingCameraIds = async () => {
     return res.data?.data || [];
 };
 
+// Connect stream by credentials (create or reuse camera, start stream)
+const connectCameraByCredentials = async ({
+    ip,
+    username,
+    password,
+    port,
+    address,
+    haTemperatureEntityId,
+    haHumidityEntityId,
+}) => {
+    const res = await axios.post(`${API_BASE}/cameras/stream/connect`, {
+        ip,
+        username,
+        password,
+        port,
+        address,
+        haTemperatureEntityId,
+        haHumidityEntityId,
+    });
+    return res.data; // { success, cameraId, ... }
+};
+
 export {
     getCameras,
     createCamera,
@@ -67,4 +89,5 @@ export {
     stopSingleCameraStream,
     deleteCamera,
     getStreamingCameraIds,
+    connectCameraByCredentials,
 };
